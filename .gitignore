@@ -228,4 +228,7 @@ progress.json
 progress.txt
 progress.md
 
-QWEN.md
+QWEN.md"repomix-output.xml" 
+".flake8" 
+"lint.bat" 
+"lint.sh" 
