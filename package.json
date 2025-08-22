@@ -1,0 +1,22 @@
+{
+  "name": "homeser",
+  "version": "1.0.0",
+  "description": "HomeSer - A Household Service Providing Platform",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/styles.css -o ./static/css/output.css --minify",
+    "dev:css": "tailwindcss -i ./static/css/styles.css -o ./static/css/output.css --watch",
+    "build": "npm run build:css"
+  },
+  "keywords": [
+    "django",
+    "household",
+    "services",
+    "platform"
+  ],
+  "author": "HomeSer Team",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

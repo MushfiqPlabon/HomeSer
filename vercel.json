@@ -1,0 +1,20 @@
+# vercel.json
+
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "HomeSer/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "HomeSer/wsgi.py"
+    }
+  ]
+}

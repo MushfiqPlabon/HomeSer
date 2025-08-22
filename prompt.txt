@@ -1,0 +1,202 @@
+You are operating as a Principal Software Engineer. Your mission is to build and document a production-grade Django project from scratch and prepare it for deployment on Vercel's free tier. We are on windows powershell.
+
+🎯 Primary Goal
+Build a Household Service Providing Platform named "HomeSer". The application will be a monolithic Django project using Django Templates for the frontend.
+
+⚙️ Core Stack & Constraints (Non-Negotiable)
+Hosting: Vercel (Free Tier) using the Python Serverless Function runtime.
+
+Frontend: Django HTML Templates only. Use Tailwind CSS v3 (not v4), and FontAwesome, embedded as static assets via collectstatic. Custom CSS allowed, dark neon aesthetic preferred, like Neon lights-like text on AMOLED bg.
+
+Backend: Django, Django REST Framework (DRF).
+
+Database: Supabase Postgres (Free Tier).
+
+Media Storage: Cloudinary (Free Tier).
+
+Caching (Optional): Upstash Redis (Free Tier).
+
+Authentication: JWT via djangorestframework-simplejwt, stored in secure, HTTP-only cookies.
+
+Static Files: Served by WhiteNoise.
+
+CI/CD: GitHub Actions for linting, testing, and security audits.
+
+Platform Agnosticism: The project must be runnable on any OS (e.g., Windows 11, Linux, macOS). All setup instructions in the README.md must reflect this.
+
+👤 Operating Protocol
+Stateless & Resumable: You must operate as if your process could be interrupted at any time. Before starting, check for progress.md. If it exists, resume from the last completed step.
+
+Checkpoint Progress: After every single file creation or modification, you must append a timestamped log entry to progress.txt and a corresponding machine-readable object to a progress.json array. Maintain a more descriptive version in progress.md. Never overwrite these files; always append.
+
+Research First: Before implementing a major feature (e.g., Vercel deployment, JWT cookies), perform a web search for the latest official documentation and best practices. Summarize your findings, including URLs and access dates, in research.md.
+
+Be Concise: Keep your interactive responses brief. Prefer writing detailed artifacts to files (strategy_document.md, README.md, etc.) over long chat messages.
+
+📝 Project Requirements & Features
+Implement the following features, ensuring the final application meets these criteria:
+
+User Authentication & Roles:
+
+User registration (Client role by default) and login.
+
+Custom User model with two roles: Admin and Client.
+
+Clients can manage their own profile (ClientProfile model): bio, profile picture, social links.
+
+Admin Capabilities:
+
+An admin-only API endpoint (POST /api/admin/promote/<user_id>/) to promote a Client to an Admin.
+
+This action must be restricted to authenticated Admins only.
+
+Service & Cart Management:
+
+Admins can perform CRUD operations on Service models.
+
+Clients can browse and search for services.
+
+Clients can sort services by average rating.
+
+Clients can add/remove services from a Cart.
+
+The "checkout" process creates an Order from the cart's contents and then clears the cart.
+
+Reviews and Ratings:
+
+Clients can leave a rating (1-5 stars) and a text review for each service they have a completed Order for.
+
+The average rating must be calculated and displayed for each service.
+
+Future-Proofing:
+
+Design the Order model and checkout flow with a placeholder for future payment gateway integration (e.g., a status field like PENDING_PAYMENT). No payment logic is required now.
+
+🗺️ Execution Plan
+Phase 0: Setup & Research
+Initialize progress tracking: Create or append to progress.txt, progress.json, and progress.md. If resuming, add a === NEW SESSION START: {timestamp} === header.
+
+Conduct & Document Research in research.md:
+
+Deploying a Django WSGI app on the Vercel Python Runtime.
+
+Configuring ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS for *.vercel.app domains.
+
+Serving static files with WhiteNoise on Vercel.
+
+Best practices for DRF simplejwt with HTTP-only cookies, including refresh token rotation.
+
+Connecting to Supabase, Cloudinary, and Upstash from Django.
+
+Using Tailwind CSS v3 with Django's collectstatic.
+
+Vercel free-tier limitations (e.g., function timeouts).
+
+Create strategy_document.md: Summarize key architectural decisions. Crucially, explain why Celery must run in eager mode on Vercel's serverless functions and outline a strategy for migrating to a real worker service later.
+
+Phase 1: Scaffolding & Configuration
+Generate the project structure (HomeSer root folder, core project, apps, templates, etc.).
+
+Set up django-environ with dynamic fallbacks in settings/base.py:
+
+DATABASE_URL -> SQLite if not set.
+
+CLOUDINARY_URL -> Local file storage if not set.
+
+REDIS_URL -> LocMemCache and Celery eager mode if not set.
+
+Create vercel.json to configure the Python runtime and route all traffic to the Django WSGI app (/api/index.py), except for /staticfiles/.
+
+Create build_files.sh (make it executable) to install dependencies, run collectstatic, and apply migrations during the Vercel build process.
+
+Implement the custom User and all other models (ClientProfile, Service, Cart, CartItem, Order, Review).
+
+Configure DRF, simplejwt (for cookie-based auth), drf-spectacular, and CORS headers.
+
+Phase 2: Implementation & Testing
+Develop serializers, views (using DRF ViewSets), and URLs for all required API endpoints. Follow a "Fat Models, Skinny Views" pattern and optimize queries with select_related/prefetch_related.
+
+Implement caching on read-heavy endpoints (e.g., service listing) if Redis is configured.
+
+Write tests using pytest and factory_boy for key business logic and API endpoints.
+
+Create a seeding mechanism (either seed_data.json fixtures or a seed_demo_data management command) to populate the database with sample users, services, and reviews.
+
+Phase 3: Documentation & CI/CD
+Generate a comprehensive README.md that includes:
+
+Project overview.
+
+Instructions for local setup (platform-agnostic).
+
+Environment variable configuration (.env.example).
+
+How to run tests and seed data.
+
+A detailed, step-by-step Vercel Deployment Manual.
+
+Generate an OpenAPI schema using drf-spectacular and expose the Swagger/Redoc UI.
+
+Create a HomeSer.postman_collection.json.
+
+Set up a GitHub Actions workflow to run on push:
+
+Lint & Format Check (black, isort, flake8).
+
+Run tests with pytest.
+
+Run a security audit with pip-audit.
+
+✅ Final Deliverables Checklist
+Full Django source code in the HomeSer directory.
+
+Configuration files: vercel.json, build_files.sh, requirements.txt.
+
+Documentation: README.md, research.md, strategy_document.md.
+
+API artifacts: OpenAPI schema, Postman collection.
+
+Seeding data: seed_data.json or management command.
+
+CI: .github/workflows/ci.yml.
+
+State tracking: progress.md, progress.json, progress.txt
+
+🏁 Kick-off Instruction
+Acknowledge these instructions and begin with Phase 0. Your first outputs should be the initial research findings and the creation of the progress tracking files.
+
+tailwind 3 example:
+Install Tailwind CSS
+Install tailwindcss via npm, and create your tailwind.config.js file.
+
+Terminal
+
+npm install -D tailwindcss@3
+npx tailwindcss init
+Configure your template paths
+Add the paths to all of your template files in your tailwind.config.js file.
+
+tailwind.config.js
+
+  /** @type {import('tailwindcss').Config} */
+ export default {
+>   content: ["./src/**/*.{html,js}"],
+    theme: {
+      extend: {},
+    },
+    plugins: [],
+  }
+Add the Tailwind directives to your CSS
+Add the @tailwind directives for each of Tailwind’s layers to your main CSS file.
+
+src/input.css
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+Start the Tailwind CLI build process
+Run the CLI tool to scan your template files for classes and build your CSS.
+
+Terminal
+
+npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
