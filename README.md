@@ -15,7 +15,7 @@ HomeSer is a Household Service Providing Platform built with Django. It allows c
 - Admin capabilities to manage services and promote users
 - Reviews and ratings for services
 - Future-proofed for payment gateway integration
-- Enhanced UI/UX with improved typography andFontAwesome icons
+- Enhanced UI/UX with improved typography and FontAwesome icons
 
 ## Tech Stack
 
@@ -33,7 +33,7 @@ HomeSer is a Household Service Providing Platform built with Django. It allows c
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.10+ (required for Django 5.0.4)
 - Node.js and npm (for Tailwind CSS)
 - A Supabase account
 - A Cloudinary account
@@ -43,7 +43,7 @@ HomeSer is a Household Service Providing Platform built with Django. It allows c
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/HomeSer.git
+   git clone https://github.com/MushfiqPlabon/HomeSer.git
    cd HomeSer
    ```
 
@@ -152,6 +152,13 @@ HomeSer is a Household Service Providing Platform built with Django. It allows c
 ## API Documentation
 
 The API documentation is available at `/api/docs/swagger/` or `/api/docs/redoc/` when the development server is running.
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment with three jobs:
+- **Lint**: Checks code formatting with black, isort, and flake8
+- **Test**: Runs tests with pytest
+- **Security**: Runs security audits with pip-audit
 
 ## Known Development Issues
 

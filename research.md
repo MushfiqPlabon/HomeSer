@@ -66,3 +66,19 @@
 ### Summary
 - The free tier has limitations on execution time for serverless functions, which may affect long-running tasks.
 - Cold start times can impact performance.
+
+## CI/CD Best Practices with GitHub Actions
+
+### Sources
+- [GitHub Actions Documentation](https://docs.github.com/en/actions) (Accessed: 2025-08-22)
+- [Python Testing with pytest](https://docs.pytest.org/en/stable/) (Accessed: 2025-08-22)
+- [Code Formatting with Black](https://black.readthedocs.io/en/stable/) (Accessed: 2025-08-22)
+- [Security Auditing with pip-audit](https://pypi.org/project/pip-audit/) (Accessed: 2025-08-22)
+
+### Summary
+- GitHub Actions provides a robust platform for CI/CD workflows.
+- It's important to use the correct Python version that matches your dependencies.
+- pytest requires proper configuration to discover and run tests, including setting the PYTHONPATH.
+- Code formatting tools like Black help maintain consistent code style.
+- Security auditing tools like pip-audit can identify vulnerabilities in dependencies.
+- setuptools versions should be kept up to date to avoid security vulnerabilities.

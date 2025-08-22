@@ -57,6 +57,31 @@ This document outlines the key architectural decisions for the HomeSer project, 
 - Added request throttling to prevent abuse
 - Optimized serializers to reduce data transfer
 
+## CI/CD Pipeline Strategy
+
+### 1. GitHub Actions Workflow
+- **Reasoning**: GitHub Actions provides a robust platform for CI/CD workflows that integrates well with the project's GitHub repository.
+- **Implementation**: 
+  - Set up three jobs: linting, testing, and security auditing
+  - Use the correct Python version (3.10) to match project dependencies
+  - Configure pytest with proper PYTHONPATH for module discovery
+  - Implement code formatting checks with Black
+  - Add security auditing with pip-audit to identify vulnerabilities
+
+### 2. Automated Testing
+- **Reasoning**: Automated testing ensures code quality and prevents regressions.
+- **Implementation**: 
+  - Create test files that follow pytest discovery patterns
+  - Write tests for critical business logic and API endpoints
+  - Configure test environment to match development setup
+
+### 3. Code Quality Assurance
+- **Reasoning**: Consistent code style and formatting improve maintainability.
+- **Implementation**: 
+  - Use Black for automatic code formatting
+  - Implement linting with flake8 and isort
+  - Configure pre-commit hooks to enforce code quality standards
+
 ## Current Development Status
 
 ### Completed Features
@@ -69,6 +94,7 @@ This document outlines the key architectural decisions for the HomeSer project, 
 - ✅ Responsive design with mobile support
 - ✅ Performance optimizations
 - ✅ Microinteractions and animations
+- ✅ CI/CD pipeline with automated testing and security auditing
 
 ### Known Issues (Development State)
 - Need to verify CartItem unique constraint implementation
