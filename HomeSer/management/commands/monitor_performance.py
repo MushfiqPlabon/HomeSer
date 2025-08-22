@@ -1,17 +1,11 @@
+import time
+
+from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.db import connection
-from django.core.cache import cache
-from HomeSer.models import (
-    User,
-    ClientProfile,
-    Service,
-    Cart,
-    CartItem,
-    Order,
-    OrderItem,
-    Review,
-)
-import time
+
+from HomeSer.models import (Cart, CartItem, ClientProfile, Order, OrderItem,
+                            Review, Service, User)
 
 
 class Command(BaseCommand):

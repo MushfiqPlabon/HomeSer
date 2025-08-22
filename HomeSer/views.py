@@ -1,36 +1,22 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404
-from rest_framework import serializers
-from django.db.models import Prefetch, Count, Avg, Sum
-from django.core.cache import cache
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.cache import cache
 from django.db import transaction
-from .models import (
-    User,
-    ClientProfile,
-    Service,
-    Cart,
-    CartItem,
-    Order,
-    OrderItem,
-    Review,
-)
-from .serializers import (
-    UserSerializer,
-    ClientProfileSerializer,
-    ServiceSerializer,
-    CartSerializer,
-    OrderSerializer,
-    ReviewSerializer,
-)
+from django.db.models import Avg, Count, Prefetch, Sum
+from django.shortcuts import get_object_or_404, redirect, render
+from rest_framework import permissions, serializers, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from .forms import ClientProfileForm
+from .models import (Cart, CartItem, ClientProfile, Order, OrderItem, Review,
+                     Service, User)
+from .serializers import (CartSerializer, ClientProfileSerializer,
+                          OrderSerializer, ReviewSerializer, ServiceSerializer,
+                          UserSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):

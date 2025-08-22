@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -161,8 +162,8 @@ SIMPLE_JWT = {
 # Cloudinary Settings
 if env("CLOUDINARY_URL"):
     import cloudinary
-    import cloudinary.uploader
     import cloudinary.api
+    import cloudinary.uploader
 
     cloudinary.config(
         cloud_name=env("CLOUDINARY_CLOUD_NAME"),

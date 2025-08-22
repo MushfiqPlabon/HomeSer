@@ -1,15 +1,10 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-from HomeSer.models import (
-    Service,
-    ClientProfile,
-    Cart,
-    CartItem,
-    Order,
-    OrderItem,
-    Review,
-)
 import random
+
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+
+from HomeSer.models import (Cart, CartItem, ClientProfile, Order, OrderItem,
+                            Review, Service)
 
 User = get_user_model()
 

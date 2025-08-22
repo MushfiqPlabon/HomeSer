@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import connection, models
-from HomeSer.models import Service, Review
+
+from HomeSer.models import Review, Service
 
 
 class Command(BaseCommand):
