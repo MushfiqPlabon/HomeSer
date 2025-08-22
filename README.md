@@ -160,6 +160,40 @@ The project uses GitHub Actions for continuous integration and deployment with t
 - **Test**: Runs tests with pytest
 - **Security**: Runs security audits with pip-audit
 
+## Code Linting and Formatting
+
+This project uses several tools to ensure code quality and consistency:
+
+- **black**: Code formatter that automatically formats Python code
+- **isort**: Sorts and organizes import statements
+- **flake8**: Checks for code style violations and potential errors
+
+### Running Linters Locally
+
+You can run the linters manually using the provided scripts:
+
+- On Unix-like systems (Linux, macOS): `./lint.sh`
+- On Windows: `lint.bat`
+
+Or run them individually:
+
+```bash
+# Format code with black
+black .
+
+# Sort imports with isort
+isort --profile black .
+
+# Check for style issues with flake8
+flake8 .
+```
+
+### Configuration
+
+- **black**: Configured in `pyproject.toml` with a line length of 88 characters
+- **isort**: Configured in `pyproject.toml` with the black profile
+- **flake8**: Configured in `.flake8` with specific rules ignored for Django project needs
+
 ## Known Development Issues
 
 See `bug_tracking.md` for current bugs that need to be fixed.
