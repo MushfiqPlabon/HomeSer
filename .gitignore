@@ -228,4 +228,11 @@ progress.json
 progress.txt
 progress.md
 
+# Linting and formatting
+.flake8
+
+# Script files
+*.sh
+
+# Qwen Code context file
 QWEN.md
