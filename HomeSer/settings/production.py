@@ -29,8 +29,8 @@ STATICFILES_DIRS = [
 # Media files
 if env("CLOUDINARY_URL"):
     import cloudinary
-    import cloudinary.uploader
     import cloudinary.api
+    import cloudinary.uploader
 
     cloudinary.config(
         cloud_name=env("CLOUDINARY_CLOUD_NAME"),

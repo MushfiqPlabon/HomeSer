@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand
-from django.core.management import call_command
 from django.core.cache import cache
+from django.core.management import call_command
+from django.core.management.base import BaseCommand
 from django.db import connection
-from HomeSer.models import Service, Review
+
+from HomeSer.models import Review, Service
 
 
 class Command(BaseCommand):

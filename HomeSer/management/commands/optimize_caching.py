@@ -1,7 +1,8 @@
-from django.core.management.base import BaseCommand
-from django.core.cache import cache
 from django.conf import settings
-from HomeSer.models import Service, Review, Order
+from django.core.cache import cache
+from django.core.management.base import BaseCommand
+
+from HomeSer.models import Order, Review, Service
 
 
 class Command(BaseCommand):
