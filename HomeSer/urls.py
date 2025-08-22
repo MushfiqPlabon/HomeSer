@@ -4,9 +4,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('HomeSer.api_urls')),
-    path('', include('HomeSer.web_urls')),
+    path("admin/", admin.site.urls),
+    path("api/", include("HomeSer.api_urls")),
+    path("", include("HomeSer.web_urls")),
 ]
 
 if settings.DEBUG:

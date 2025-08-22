@@ -38,6 +38,8 @@ jobs:
         pip install pytest pytest-django factory-boy
     - name: Run tests
       run: pytest
+      env:
+        DJANGO_SETTINGS_MODULE: HomeSer.settings
 
   security:
     runs-on: ubuntu-latest
