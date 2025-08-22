@@ -1,7 +1,15 @@
 from django.contrib import admin
 
-from .models import (Cart, CartItem, ClientProfile, Order, OrderItem, Review,
-                     Service, User)
+from .models import (
+    Cart,
+    CartItem,
+    ClientProfile,
+    Order,
+    OrderItem,
+    Review,
+    Service,
+    User,
+)
 
 
 @admin.register(User)
