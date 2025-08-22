@@ -228,7 +228,9 @@ progress.json
 progress.txt
 progress.md
 
-QWEN.md"repomix-output.xml" 
-".flake8" 
-"lint.bat" 
-"lint.sh" 
+# Additional files to ignore
+repomix-output.xml
+.flake8
+lint.bat
+lint.sh
+QWEN.md
