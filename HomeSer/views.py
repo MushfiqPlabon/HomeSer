@@ -12,11 +12,24 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .forms import ClientProfileForm
-from .models import (Cart, CartItem, ClientProfile, Order, OrderItem, Review,
-                     Service, User)
-from .serializers import (CartSerializer, ClientProfileSerializer,
-                          OrderSerializer, ReviewSerializer, ServiceSerializer,
-                          UserSerializer)
+from .models import (
+    Cart,
+    CartItem,
+    ClientProfile,
+    Order,
+    OrderItem,
+    Review,
+    Service,
+    User,
+)
+from .serializers import (
+    CartSerializer,
+    ClientProfileSerializer,
+    OrderSerializer,
+    ReviewSerializer,
+    ServiceSerializer,
+    UserSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
