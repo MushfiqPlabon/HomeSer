@@ -1,8 +1,16 @@
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from HomeSer.models import (Cart, CartItem, ClientProfile, Order, OrderItem,
-                            Review, Service, User)
+from HomeSer.models import (
+    Cart,
+    CartItem,
+    ClientProfile,
+    Order,
+    OrderItem,
+    Review,
+    Service,
+    User,
+)
 
 
 class Command(BaseCommand):

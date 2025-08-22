@@ -7,16 +7,30 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Avg, Count, Prefetch, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+
 from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .forms import ClientProfileForm
-from .models import (Cart, CartItem, ClientProfile, Order, OrderItem, Review,
-                     Service, User)
-from .serializers import (CartSerializer, ClientProfileSerializer,
-                          OrderSerializer, ReviewSerializer, ServiceSerializer,
-                          UserSerializer)
+from .models import (
+    Cart,
+    CartItem,
+    ClientProfile,
+    Order,
+    OrderItem,
+    Review,
+    Service,
+    User,
+)
+from .serializers import (
+    CartSerializer,
+    ClientProfileSerializer,
+    OrderSerializer,
+    ReviewSerializer,
+    ServiceSerializer,
+    UserSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
