@@ -6,54 +6,69 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('HomeSer', '0001_initial'),
+        ("HomeSer", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='order',
-            name='created_at',
+            model_name="order",
+            name="created_at",
             field=models.DateTimeField(auto_now_add=True, db_index=True),
         ),
         migrations.AlterField(
-            model_name='order',
-            name='status',
-            field=models.CharField(db_index=True, default='PENDING_PAYMENT', max_length=50),
+            model_name="order",
+            name="status",
+            field=models.CharField(
+                db_index=True, default="PENDING_PAYMENT", max_length=50
+            ),
         ),
         migrations.AlterField(
-            model_name='review',
-            name='created_at',
+            model_name="review",
+            name="created_at",
             field=models.DateTimeField(auto_now_add=True, db_index=True),
         ),
         migrations.AlterField(
-            model_name='service',
-            name='average_rating',
+            model_name="service",
+            name="average_rating",
             field=models.FloatField(db_index=True, default=0.0),
         ),
         migrations.AlterField(
-            model_name='service',
-            name='name',
+            model_name="service",
+            name="name",
             field=models.CharField(db_index=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='role',
-            field=models.CharField(choices=[('admin', 'Admin'), ('client', 'Client')], db_index=True, default='client', max_length=10),
+            model_name="user",
+            name="role",
+            field=models.CharField(
+                choices=[("admin", "Admin"), ("client", "Client")],
+                db_index=True,
+                default="client",
+                max_length=10,
+            ),
         ),
         migrations.AddIndex(
-            model_name='cartitem',
-            index=models.Index(fields=['cart', 'service'], name='HomeSer_car_cart_id_54c631_idx'),
+            model_name="cartitem",
+            index=models.Index(
+                fields=["cart", "service"], name="HomeSer_car_cart_id_54c631_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='orderitem',
-            index=models.Index(fields=['order', 'service'], name='HomeSer_ord_order_i_b1b15c_idx'),
+            model_name="orderitem",
+            index=models.Index(
+                fields=["order", "service"], name="HomeSer_ord_order_i_b1b15c_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='review',
-            index=models.Index(fields=['service', '-created_at'], name='HomeSer_rev_service_64b9f1_idx'),
+            model_name="review",
+            index=models.Index(
+                fields=["service", "-created_at"], name="HomeSer_rev_service_64b9f1_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='review',
-            index=models.Index(fields=['user', 'service'], name='HomeSer_rev_user_id_65851d_idx'),
+            model_name="review",
+            index=models.Index(
+                fields=["user", "service"], name="HomeSer_rev_user_id_65851d_idx"
+            ),
         ),
     ]
