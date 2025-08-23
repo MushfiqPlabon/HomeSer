@@ -9,6 +9,7 @@ class User(AbstractUser):
         ("client", "Client"),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="client")
+    is_active = models.BooleanField(default=False)  # New users are inactive by default
 
     def __str__(self):
         return self.username

@@ -1,4 +1,5 @@
 # HomeSer
+This project was create for the Django-Final-Exam assignment of Phitron's SDT track's Software Development Project, Milestone 4, Module 27.
 
 HomeSer is a modern, full-featured Household Service Providing Platform built with Django. It provides a seamless experience for clients to browse, search, and order services, while offering a robust administrative interface for managing services, users, and roles.
 
@@ -213,7 +214,70 @@ This project leverages a modern technology stack including Django REST Framework
 
 The API documentation is available at `/api/docs/swagger/` or `/api/docs/redoc/` when the development server is running.
 
-## Contributing
+## Email Verification
+
+This project includes email verification for new user registrations. When a user registers, they will receive an email with an activation link. They must click this link to activate their account before they can log in.
+
+### Configuration
+
+The project uses a dynamic email configuration:
+- If email credentials are provided in the `.env` file, it will use real email sending via SMTP
+- If no email credentials are provided, it will fall back to printing emails to the console
+
+This works regardless of whether DEBUG is True or False.
+
+For production email sending with Gmail, you need to:
+
+1. Enable 2-Factor Authentication on your Google account
+2. Generate an App Password for "Mail" at https://myaccount.google.com/apppasswords
+3. Use the 16-character app password in your `.env` file:
+
+```
+# Email Settings for Gmail
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-16-character-app-password
+EMAIL_USE_TLS=True
+DEFAULT_FROM_EMAIL=your-email@gmail.com
+```
+
+For other email providers, configure the appropriate SMTP settings:
+
+```
+# Email Settings for Other Providers
+EMAIL_HOST=your-smtp-server.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@yourdomain.com
+EMAIL_HOST_PASSWORD=your-email-password
+EMAIL_USE_TLS=True
+DEFAULT_FROM_EMAIL=your-email@yourdomain.com
+```
+
+### Testing Email Verification
+
+1. Start the development server:
+   ```bash
+   python manage.py runserver
+   ```
+
+2. Navigate to http://localhost:8000/accounts/register/ and register a new user
+
+3. Check your inbox for the activation email (if using real email) or the console output (if using console backend)
+
+4. Copy the activation link from the email and paste it in your browser
+
+5. The account should be activated and you'll be logged in automatically
+
+### Customizing Email Templates
+
+The email templates can be found in:
+- `templates/registration/activation_email.html` (HTML version)
+- `templates/registration/activation_email.txt` (Plain text version)
+
+You can customize these templates to match your brand.
+
+## API Documentation
 
 1. Fork the repository
 2. Create a new branch (`git checkout -b feature/your-feature`)

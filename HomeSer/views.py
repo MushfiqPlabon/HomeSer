@@ -5,9 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.cache import cache
+from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import F, Prefetch, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.sites.shortcuts import get_current_site
 from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
@@ -42,6 +47,8 @@ from .serializers import (
     ServiceSerializer,
     UserSerializer,
 )
+from .tokens import account_activation_token, generate_activation_link
+from .decorators import jwt_login_required
 
 
 @extend_schema_view(
@@ -780,6 +787,7 @@ def service_detail(request, service_id):
     return render(request, "service_detail.html", context)
 
 
+@jwt_login_required
 @login_required
 def cart(request):
     # Check cache first
@@ -800,6 +808,7 @@ def cart(request):
     return render(request, "cart.html", {"cart": cart})
 
 
+@jwt_login_required
 @login_required
 def add_to_cart(request):
     if request.method == "POST":
@@ -827,6 +836,7 @@ def add_to_cart(request):
     return redirect("service_detail", service_id=service_id)
 
 
+@jwt_login_required
 @login_required
 def remove_from_cart(request):
     if request.method == "POST":
@@ -848,6 +858,7 @@ def remove_from_cart(request):
     return redirect("cart")
 
 
+@jwt_login_required
 @login_required
 def checkout(request):
     # Optimize with prefetch_related
@@ -887,6 +898,7 @@ def checkout(request):
     return redirect("orders")
 
 
+@jwt_login_required
 @login_required
 def orders(request):
     # Check cache first
@@ -913,6 +925,9 @@ def orders(request):
     return render(request, "orders.html", {"orders": orders})
 
 
+from .decorators import jwt_login_required
+
+@jwt_login_required
 @login_required
 def profile(request):
     # Optimize with select_related
@@ -922,6 +937,7 @@ def profile(request):
     return render(request, "profile.html", {"profile": profile})
 
 
+@jwt_login_required
 @login_required
 def edit_profile(request):
     # Optimize with select_related
@@ -940,17 +956,87 @@ def edit_profile(request):
     return render(request, "edit_profile.html", {"form": form})
 
 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.sites.shortcuts import get_current_site
+from .tokens import account_activation_token, generate_activation_link
+
+
 def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful!")
+            user = form.save(commit=False)
+            user.is_active = False  # User is inactive until email confirmation
+            user.save()
+            
+            # Send activation email
+            current_site = get_current_site(request)
+            subject = 'Activate your HomeSer account'
+            
+            # Create activation link
+            activation_link = generate_activation_link(user)
+            activation_url = f"http://{current_site.domain}{activation_link}"
+            
+            # Render email content
+            message = render_to_string('registration/activation_email.txt', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            
+            html_message = render_to_string('registration/activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            
+            # Send email
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+                html_message=html_message
+            )
+            
+            messages.success(request, "Registration successful! Please check your email to activate your account.")
             return redirect("home")
     else:
         form = UserCreationForm()
     return render(request, "registration/register.html", {"form": form})
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Your account has been activated successfully!")
+        login(request, user)
+        
+        # Create JWT tokens for the newly activated user
+        from .jwt_utils import create_jwt_tokens_for_user, set_jwt_cookies
+        tokens = create_jwt_tokens_for_user(user)
+        
+        # Redirect to home and set JWT cookies
+        response = redirect("home")
+        response = set_jwt_cookies(response, tokens['access'], tokens['refresh'])
+        return response
+    else:
+        messages.error(request, "Activation link is invalid!")
+        return redirect("home")
 
 
 def login_view(request):
@@ -963,7 +1049,15 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Welcome back, {username}!")
-                return redirect("home")
+                
+                # Create JWT tokens
+                from .jwt_utils import create_jwt_tokens_for_user, set_jwt_cookies
+                tokens = create_jwt_tokens_for_user(user)
+                
+                # Redirect to home and set JWT cookies
+                response = redirect("home")
+                response = set_jwt_cookies(response, tokens['access'], tokens['refresh'])
+                return response
     else:
         form = AuthenticationForm()
     return render(request, "registration/login.html", {"form": form})
@@ -984,5 +1078,9 @@ def logout_view(request):
         cache.delete(f"orders_{user.id}_web")
         cache.delete(f"orders_{user.id}")
 
+    # Remove JWT cookies
+    from .jwt_utils import unset_jwt_cookies
+    response = redirect("home")
+    response = unset_jwt_cookies(response)
     messages.success(request, "You have been logged out successfully!")
-    return redirect("home")
+    return response
