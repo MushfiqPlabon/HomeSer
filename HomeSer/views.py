@@ -4,15 +4,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.postgres.search import SearchQuery, SearchVector
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import F, Prefetch, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
@@ -27,6 +27,7 @@ from rest_framework_simplejwt.token_blacklist.models import (
     OutstandingToken,
 )
 
+from .decorators import jwt_login_required
 from .forms import ClientProfileForm
 from .models import (
     Cart,
@@ -47,8 +48,7 @@ from .serializers import (
     ServiceSerializer,
     UserSerializer,
 )
-from .tokens import account_activation_token, generate_activation_link
-from .decorators import jwt_login_required
+from .tokens import account_activation_token
 
 
 @extend_schema_view(
@@ -787,8 +787,6 @@ def service_detail(request, service_id):
     return render(request, "service_detail.html", context)
 
 
-@jwt_login_required
-@login_required
 def cart(request):
     # Check cache first
     cache_key = f"cart_{request.user.id}_web"
@@ -925,8 +923,6 @@ def orders(request):
     return render(request, "orders.html", {"orders": orders})
 
 
-from .decorators import jwt_login_required
-
 @jwt_login_required
 @login_required
 def profile(request):
@@ -956,15 +952,6 @@ def edit_profile(request):
     return render(request, "edit_profile.html", {"form": form})
 
 
-from django.core.mail import send_mail
-from django.conf import settings
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.sites.shortcuts import get_current_site
-from .tokens import account_activation_token, generate_activation_link
-
-
 def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -972,30 +959,32 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False  # User is inactive until email confirmation
             user.save()
-            
+
             # Send activation email
             current_site = get_current_site(request)
-            subject = 'Activate your HomeSer account'
-            
-            # Create activation link
-            activation_link = generate_activation_link(user)
-            activation_url = f"http://{current_site.domain}{activation_link}"
-            
+            subject = "Activate your HomeSer account"
+
             # Render email content
-            message = render_to_string('registration/activation_email.txt', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            
-            html_message = render_to_string('registration/activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            
+            message = render_to_string(
+                "registration/activation_email.txt",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            )
+
+            html_message = render_to_string(
+                "registration/activation_email.html",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            )
+
             # Send email
             send_mail(
                 subject=subject,
@@ -1003,10 +992,13 @@ def register(request):
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,
-                html_message=html_message
+                html_message=html_message,
             )
-            
-            messages.success(request, "Registration successful! Please check your email to activate your account.")
+
+            messages.success(
+                request,
+                "Registration successful! Please check your email to activate your account.",
+            )
             return redirect("home")
     else:
         form = UserCreationForm()
@@ -1025,14 +1017,15 @@ def activate(request, uidb64, token):
         user.save()
         messages.success(request, "Your account has been activated successfully!")
         login(request, user)
-        
+
         # Create JWT tokens for the newly activated user
         from .jwt_utils import create_jwt_tokens_for_user, set_jwt_cookies
+
         tokens = create_jwt_tokens_for_user(user)
-        
+
         # Redirect to home and set JWT cookies
         response = redirect("home")
-        response = set_jwt_cookies(response, tokens['access'], tokens['refresh'])
+        response = set_jwt_cookies(response, tokens["access"], tokens["refresh"])
         return response
     else:
         messages.error(request, "Activation link is invalid!")
@@ -1049,14 +1042,17 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Welcome back, {username}!")
-                
+
                 # Create JWT tokens
                 from .jwt_utils import create_jwt_tokens_for_user, set_jwt_cookies
+
                 tokens = create_jwt_tokens_for_user(user)
-                
+
                 # Redirect to home and set JWT cookies
                 response = redirect("home")
-                response = set_jwt_cookies(response, tokens['access'], tokens['refresh'])
+                response = set_jwt_cookies(
+                    response, tokens["access"], tokens["refresh"]
+                )
                 return response
     else:
         form = AuthenticationForm()
@@ -1080,6 +1076,7 @@ def logout_view(request):
 
     # Remove JWT cookies
     from .jwt_utils import unset_jwt_cookies
+
     response = redirect("home")
     response = unset_jwt_cookies(response)
     messages.success(request, "You have been logged out successfully!")

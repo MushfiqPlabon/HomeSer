@@ -6,13 +6,13 @@ from django.core.mail import send_mail
 
 @shared_task
 def debug_task():
-    """Simple debug task to test Celery configuration"""
+    """Simple debug task to test Celery configuration."""
     return "Hello from Celery!"
 
 
 @shared_task
 def send_email_task(subject, message, recipient_list):
-    """Task to send emails asynchronously"""
+    """Task to send emails asynchronously."""
     try:
         send_mail(
             subject=subject,

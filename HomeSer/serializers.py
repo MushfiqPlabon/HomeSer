@@ -14,10 +14,10 @@ from .models import (
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    User account information.
+    """User account information.
 
-    This serializer handles user account data including authentication details.
+    This serializer handles user account data including authentication
+    details.
     """
 
     id = serializers.IntegerField(
@@ -36,8 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ClientProfileSerializer(serializers.ModelSerializer):
-    """
-    Extended profile information for clients.
+    """Extended profile information for clients.
 
     Contains additional details about users with the 'client' role.
     """
@@ -75,8 +74,7 @@ class ClientProfileSerializer(serializers.ModelSerializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    """
-    Household service information.
+    """Household service information.
 
     Represents a service that can be ordered through the platform.
     """
@@ -102,8 +100,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
-    """
-    Individual item in a shopping cart.
+    """Individual item in a shopping cart.
 
     Represents a service that has been added to a user's cart.
     """
@@ -135,8 +132,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    """
-    User's shopping cart.
+    """User's shopping cart.
 
     Contains all services a user has selected but not yet ordered.
     """
@@ -191,8 +187,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    """
-    Individual item in an order.
+    """Individual item in an order.
 
     Represents a service that has been ordered by a user.
     """
@@ -224,8 +219,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """
-    Service order information.
+    """Service order information.
 
     Represents a confirmed order of services by a user.
     """
@@ -298,8 +292,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """
-    Service review and rating.
+    """Service review and rating.
 
     Allows users to provide feedback on completed services.
     """
