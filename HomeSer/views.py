@@ -7,11 +7,14 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Avg, Count, Prefetch, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 from drf_spectacular.utils import extend_schema, extend_schema_field, extend_schema_view, OpenApiExample, OpenApiTypes, OpenApiParameter
 from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from .permissions import IsOwnerOrAdmin
 
 from .forms import ClientProfileForm
 from .models import (
@@ -96,7 +99,15 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     @action(detail=True, methods=["post"], permission_classes=[permissions.IsAdminUser])
     def promote(self, request, pk=None):
+        if int(pk) == request.user.id:
+            return Response({"status": "You cannot promote yourself."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         user = get_object_or_404(User, pk=pk)
+        if user.role == "admin":
+            return Response({"status": "User is already an admin."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         user.role = "admin"
         user.save()
 
@@ -360,7 +371,8 @@ class CartViewSet(viewsets.ModelViewSet):
             annotated_total_price=Sum(
                 models.F("cartitem_set__service__price")
                 * models.F("cartitem_set__quantity")
-            )
+            ),
+            annotated_item_count=Sum("cartitem_set__quantity")
         )
 
         # Cache for 5 minutes (shorter cache time for cart)
@@ -566,7 +578,13 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
             Prefetch(
                 "orderitem_set", queryset=OrderItem.objects.select_related("service")
             )
-        ).select_related("user")
+        ).select_related("user").annotate(
+            annotated_total_price=Sum(
+                models.F("orderitem_set__service__price")
+                * models.F("orderitem_set__quantity")
+            ),
+            annotated_item_count=Sum("orderitem_set__quantity")
+        )
 
         if self.request.user.role == "admin":
             result = queryset
@@ -638,7 +656,7 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
 )
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrAdmin]
 
     def get_queryset(self):
         cache_key = f"reviews_{self.request.user.id}"
@@ -666,7 +684,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         # Optimize the query with exists() instead of filtering all orders
         if not Order.objects.filter(
-            user=user, services=service, status="completed"
+            user=user, services=service, status="COMPLETED"
         ).exists():
             raise serializers.ValidationError(
                 "You can only review services you have completed orders for."
@@ -936,10 +954,14 @@ def login_view(request):
 
 def logout_view(request):
     user = request.user
-    logout(request)
-
-    # Clear all user-related cache
     if user.is_authenticated:
+        # Blacklist JWT tokens
+        for token in OutstandingToken.objects.filter(user=user):
+            BlacklistedToken.objects.get_or_create(token=token)
+
+        logout(request)
+
+        # Clear all user-related cache
         cache.delete(f"cart_{user.id}_web")
         cache.delete(f"cart_{user.id}")
         cache.delete(f"orders_{user.id}_web")
