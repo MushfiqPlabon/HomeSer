@@ -1,41 +1,43 @@
 # settings.py
 
 import os
-from pathlib import Path
-from dotenv import load_dotenv
-import dj_database_url
 from datetime import timedelta
+from pathlib import Path
+
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
 
 # Load environment variables from .env file
-env_path = BASE_DIR.parent / '.env'
+env_path = BASE_DIR.parent / ".env"
 load_dotenv(env_path, override=True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
     raise ImproperlyConfigured("The SECRET_KEY environment variable is not set.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # Hosts allowed to access the application
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # CSRF Trusted Origins for production
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # CSRF Trusted Origins for production
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
+).split(",")
 
 # CORS Allowed Origins for production
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
-
-# CORS Allowed Origins for production
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
+).split(",")
 if not DEBUG and not CORS_ALLOWED_ORIGINS:
     raise ImproperlyConfigured("CORS_ALLOWED_ORIGINS must be set in production.")
 
@@ -53,7 +55,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "cloudinary",
     "cloudinary_storage",
-    "django_celery_results",
     "HomeSer",
 ]
 
@@ -97,31 +98,29 @@ WSGI_APPLICATION = "HomeSer.wsgi.application"
 # Supabase PostgreSQL configuration (no fallback to SQLite)
 
 # Get database configuration from environment variables using python-dotenv
-DB_USER = os.getenv('user', '').strip()
-DB_PASSWORD = os.getenv('password', '').strip()
-DB_HOST = os.getenv('host', '').strip()
-DB_PORT = os.getenv('port', '').strip()
-DB_NAME = os.getenv('dbname', '').strip()
+DB_USER = os.getenv("user", "").strip()
+DB_PASSWORD = os.getenv("password", "").strip()
+DB_HOST = os.getenv("host", "").strip()
+DB_PORT = os.getenv("port", "").strip()
+DB_NAME = os.getenv("dbname", "").strip()
 
 # Always use Supabase PostgreSQL configuration
 # Always use Supabase PostgreSQL configuration
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     db_config = dj_database_url.parse(DATABASE_URL)
     # Add SSL options for Supabase
-    db_config['OPTIONS'] = {
-        'sslmode': 'require',
-        'connect_timeout': 10,
+    db_config["OPTIONS"] = {
+        "sslmode": "require",
+        "connect_timeout": 10,
     }
-    DATABASES = {
-        'default': db_config
-    }
+    DATABASES = {"default": db_config}
 else:
     # Default to SQLite for local development
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR.parent / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR.parent / "db.sqlite3",
         }
     }
 
@@ -182,8 +181,12 @@ REST_FRAMEWORK = {
 
 # SimpleJWT Settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME_MINUTES", 60))),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME_DAYS", 1))),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME_MINUTES", 60))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME_DAYS", 1))
+    ),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
@@ -205,11 +208,13 @@ SIMPLE_JWT = {
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
     "JTI_CLAIM": "jti",
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME_MINUTES", 60))),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME_DAYS", 1))),
+    "SLIDING_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.getenv("JWT_ACCESS_TOKEN_LIFETIME_MINUTES", 60))
+    ),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(
+        days=int(os.getenv("JWT_REFRESH_TOKEN_LIFETIME_DAYS", 1))
+    ),
 }
-
-import ssl
 
 # Cache configuration
 # https://docs.djangoproject.com/en/stable/topics/cache/
@@ -258,81 +263,46 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 if os.getenv("CLOUDINARY_URL"):
     # Using single environment variable approach
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-elif os.getenv("CLOUDINARY_CLOUD_NAME") and os.getenv("CLOUDINARY_API_KEY") and os.getenv("CLOUDINARY_API_SECRET"):
+elif (
+    os.getenv("CLOUDINARY_CLOUD_NAME")
+    and os.getenv("CLOUDINARY_API_KEY")
+    and os.getenv("CLOUDINARY_API_SECRET")
+):
     # Using individual environment variables approach
     import cloudinary
-    import cloudinary.uploader
     import cloudinary.api
-    
+    import cloudinary.uploader
+
     cloudinary.config(
         cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
         api_key=os.getenv("CLOUDINARY_API_KEY"),
-        api_secret=os.getenv("CLOUDINARY_API_SECRET")
+        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
     )
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-# Celery configuration
-# https://docs.celeryproject.org/en/stable/django/
-if os.getenv("REDIS_URL"):
-    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
-    CELERY_REDIS_USE_SSL = os.getenv("CELERY_REDIS_USE_SSL", "True").lower() == "true"
-    CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", "True").lower() == "true"
-    CELERY_BEAT_SCHEDULER = os.getenv("CELERY_BEAT_SCHEDULER", "django_celery_beat.schedulers:DatabaseScheduler")
-    CELERY_BROKER_RETRY_ON_STARTUP = os.getenv("CELERY_BROKER_RETRY_ON_STARTUP", "True").lower() == "true"
-
-    # Additional Celery settings
-    CELERY_ACCEPT_CONTENT = ['json']
-    CELERY_TASK_SERIALIZER = 'json'
-    CELERY_RESULT_SERIALIZER = 'json'
-    CELERY_TIMEZONE = 'UTC'
-    CELERY_ENABLE_UTC = True
-else:
-    # Default to local memory for development (eager mode)
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
-
 # DRF Spectacular Settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'HomeSer API',
-    'DESCRIPTION': 'A modern Household Service Providing Platform - API Documentation',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    # Detailed descriptions for better understanding
-    'DESCRIPTION': '''
+    "TITLE": "HomeSer API",
+    "DESCRIPTION": """
+    A modern Household Service Providing Platform - API Documentation
+
     Welcome to the HomeSer API documentation!
-    
+
     This API allows you to interact with our household service platform programmatically.
-    
+
     ## Getting Started
     1. Register a new user account using the authentication endpoints
     2. Log in to receive authentication tokens
     3. Use the tokens to access protected endpoints
-    
+
     ## Authentication
     Most endpoints require authentication via JWT tokens. Include your token in the Authorization header:
     `Authorization: Bearer <your-token-here>`
-    
+
     ## Common Response Formats
     - Success responses typically return JSON objects with your requested data
     - Error responses follow standard HTTP status codes with descriptive messages
-    
-    ## Key Resources
-    - **Users**: Manage user accounts and roles
-    - **Services**: Browse available household services
-    - **Cart**: Manage your service selections before checkout
-    - **Orders**: View and track your service orders
-    - **Reviews**: Leave feedback on completed services
-    
-    For any questions, please refer to our main documentation or contact support.
-    ''',
-    'TAGS': [
-        {'name': 'Users', 'description': 'User account management'},
-        {'name': 'Services', 'description': 'Household services available on the platform'},
-        {'name': 'Cart', 'description': 'Shopping cart functionality'},
-        {'name': 'Orders', 'description': 'Service order management'},
-        {'name': 'Reviews', 'description': 'Service reviews and ratings'},
-    ],
-    # Disable browser cache for better development experience
-    'SERVE_PUBLIC': True,
+    """,
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }

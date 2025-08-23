@@ -3,18 +3,24 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import Avg, Count, Prefetch, Sum
+from django.db.models import F, Prefetch, Sum
 from django.shortcuts import get_object_or_404, redirect, render
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
-
-from drf_spectacular.utils import extend_schema, extend_schema_field, extend_schema_view, OpenApiExample, OpenApiTypes, OpenApiParameter
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiTypes,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from .permissions import IsOwnerOrAdmin
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
 
 from .forms import ClientProfileForm
 from .models import (
@@ -27,6 +33,7 @@ from .models import (
     Service,
     User,
 )
+from .permissions import IsOwnerOrAdmin
 from .serializers import (
     CartSerializer,
     ClientProfileSerializer,
@@ -40,28 +47,28 @@ from .serializers import (
 @extend_schema_view(
     list=extend_schema(
         summary="List all users",
-        description="Retrieve a list of all user accounts. Admins can see all users, regular users can only see their own account."
+        description="Retrieve a list of all user accounts. Admins can see all users, regular users can only see their own account.",
     ),
     create=extend_schema(
         summary="Create a new user account",
-        description="Register a new user account. This endpoint is typically used for user registration."
+        description="Register a new user account. This endpoint is typically used for user registration.",
     ),
     retrieve=extend_schema(
         summary="Get user details",
-        description="Retrieve detailed information about a specific user account by ID. Admins can view any user's details, while regular users can only view their own."
+        description="Retrieve detailed information about a specific user account by ID. Admins can view any user's details, while regular users can only view their own.",
     ),
     update=extend_schema(
         summary="Update user account",
-        description="Update all fields of a specific user account. Users can update their own account, and admins can update any user's account."
+        description="Update all fields of a specific user account. Users can update their own account, and admins can update any user's account.",
     ),
     partial_update=extend_schema(
         summary="Partially update user account",
-        description="Update specific fields of a user account without affecting others. Users can partially update their own account, and admins can update any user's account."
+        description="Update specific fields of a user account without affecting others. Users can partially update their own account, and admins can update any user's account.",
     ),
     destroy=extend_schema(
         summary="Delete a user account",
-        description="Remove a user account from the system. Only administrators can delete user accounts."
-    )
+        description="Remove a user account from the system. Only administrators can delete user accounts.",
+    ),
 )
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related("clientprofile")
@@ -95,18 +102,22 @@ class UserViewSet(viewsets.ModelViewSet):
             "including the ability to manage other users, services, and orders."
         ),
         request=None,
-        responses={200: {"status": "user promoted"}}
+        responses={200: {"status": "user promoted"}},
     )
     @action(detail=True, methods=["post"], permission_classes=[permissions.IsAdminUser])
     def promote(self, request, pk=None):
         if int(pk) == request.user.id:
-            return Response({"status": "You cannot promote yourself."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "You cannot promote yourself."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user = get_object_or_404(User, pk=pk)
         if user.role == "admin":
-            return Response({"status": "User is already an admin."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"status": "User is already an admin."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user.role = "admin"
         user.save()
@@ -120,11 +131,11 @@ class UserViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="List all client profiles",
-        description="Retrieve a list of all client profiles. Admins can see all profiles, regular users can only see their own profile."
+        description="Retrieve a list of all client profiles. Admins can see all profiles, regular users can only see their own profile.",
     ),
     create=extend_schema(
         summary="Create a client profile",
-        description="Create a new client profile. This is typically done automatically when a user registers."
+        description="Create a new client profile. This is typically done automatically when a user registers.",
     ),
     retrieve=extend_schema(
         summary="Get client profile details",
@@ -134,9 +145,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the client profile to retrieve."
+                description="ID of the client profile to retrieve.",
             )
-        ]
+        ],
     ),
     update=extend_schema(
         summary="Update client profile",
@@ -146,9 +157,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the client profile to update."
+                description="ID of the client profile to update.",
             )
-        ]
+        ],
     ),
     partial_update=extend_schema(
         summary="Partially update client profile",
@@ -158,9 +169,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the client profile to partially update."
+                description="ID of the client profile to partially update.",
             )
-        ]
+        ],
     ),
     destroy=extend_schema(
         summary="Delete a client profile",
@@ -170,10 +181,10 @@ class UserViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the client profile to delete."
+                description="ID of the client profile to delete.",
             )
-        ]
-    )
+        ],
+    ),
 )
 class ClientProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ClientProfileSerializer
@@ -201,11 +212,11 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="List all services",
-        description="Retrieve a list of all available household services. Supports search and sorting."
+        description="Retrieve a list of all available household services. Supports search and sorting.",
     ),
     create=extend_schema(
         summary="Create a new service",
-        description="Add a new household service to the platform. Admin access required."
+        description="Add a new household service to the platform. Admin access required.",
     ),
     retrieve=extend_schema(
         summary="Get service details",
@@ -215,9 +226,9 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the service to retrieve."
+                description="ID of the service to retrieve.",
             )
-        ]
+        ],
     ),
     update=extend_schema(
         summary="Update service information",
@@ -227,9 +238,9 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the service to update."
+                description="ID of the service to update.",
             )
-        ]
+        ],
     ),
     partial_update=extend_schema(
         summary="Partially update service information",
@@ -239,9 +250,9 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the service to partially update."
+                description="ID of the service to partially update.",
             )
-        ]
+        ],
     ),
     destroy=extend_schema(
         summary="Delete a service",
@@ -251,10 +262,10 @@ class ClientProfileViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the service to delete."
+                description="ID of the service to delete.",
             )
-        ]
-    )
+        ],
+    ),
 )
 class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
@@ -293,11 +304,11 @@ class ServiceViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="List user's carts",
-        description="Retrieve the current user's shopping cart. Each user typically has one cart."
+        description="Retrieve the current user's shopping cart. Each user typically has one cart.",
     ),
     create=extend_schema(
         summary="Create a new cart",
-        description="Create a new shopping cart for the current user."
+        description="Create a new shopping cart for the current user.",
     ),
     retrieve=extend_schema(
         summary="Get cart details",
@@ -307,9 +318,9 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the cart to retrieve."
+                description="ID of the cart to retrieve.",
             )
-        ]
+        ],
     ),
     update=extend_schema(
         summary="Update cart",
@@ -319,9 +330,9 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the cart to update."
+                description="ID of the cart to update.",
             )
-        ]
+        ],
     ),
     partial_update=extend_schema(
         summary="Partially update cart",
@@ -331,9 +342,9 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the cart to partially update."
+                description="ID of the cart to partially update.",
             )
-        ]
+        ],
     ),
     destroy=extend_schema(
         summary="Delete a cart",
@@ -343,10 +354,10 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the cart to delete."
+                description="ID of the cart to delete.",
             )
-        ]
-    )
+        ],
+    ),
 )
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
@@ -369,10 +380,9 @@ class CartViewSet(viewsets.ModelViewSet):
         # Annotate with total price for efficiency
         queryset = queryset.annotate(
             annotated_total_price=Sum(
-                models.F("cartitem_set__service__price")
-                * models.F("cartitem_set__quantity")
+                F("cartitem_set__service__price") * F("cartitem_set__quantity")
             ),
-            annotated_item_count=Sum("cartitem_set__quantity")
+            annotated_item_count=Sum("cartitem_set__quantity"),
         )
 
         # Cache for 5 minutes (shorter cache time for cart)
@@ -384,14 +394,14 @@ class CartViewSet(viewsets.ModelViewSet):
         description=(
             "Add a service to the current user's shopping cart. "
             "If the service is already in the cart, its quantity will be increased by 1. "
-            "Expected request body: `{\"service_id\": <integer>}`"
+            'Expected request body: `{"service_id": <integer>}`'
         ),
         request={
             "application/json": {
                 "examples": {
                     "Add Service Example": {
                         "value": {"service_id": 123},
-                        "summary": "Example of adding a service to the cart."
+                        "summary": "Example of adding a service to the cart.",
                     }
                 }
             }
@@ -404,13 +414,13 @@ class CartViewSet(viewsets.ModelViewSet):
                         "examples": {
                             "Success Response": {
                                 "value": {"status": "service added to cart"},
-                                "summary": "Successful response"
+                                "summary": "Successful response",
                             }
                         }
                     }
-                }
+                },
             }
-        }
+        },
     )
     @action(detail=False, methods=["post"])
     def add_service(self, request):
@@ -438,14 +448,14 @@ class CartViewSet(viewsets.ModelViewSet):
         summary="Remove service from cart",
         description=(
             "Remove a service from the current user's shopping cart. "
-            "Expected request body: `{\"service_id\": <integer>}`"
+            'Expected request body: `{"service_id": <integer>}`'
         ),
         request={
             "application/json": {
                 "examples": {
                     "Remove Service Example": {
                         "value": {"service_id": 123},
-                        "summary": "Example of removing a service from the cart."
+                        "summary": "Example of removing a service from the cart.",
                     }
                 }
             }
@@ -458,11 +468,11 @@ class CartViewSet(viewsets.ModelViewSet):
                         "examples": {
                             "Success Response": {
                                 "value": {"status": "service removed from cart"},
-                                "summary": "Successful response"
+                                "summary": "Successful response",
                             }
                         }
                     }
-                }
+                },
             },
             400: {
                 "description": "Service not in cart.",
@@ -471,13 +481,13 @@ class CartViewSet(viewsets.ModelViewSet):
                         "examples": {
                             "Error Response": {
                                 "value": {"status": "service not in cart"},
-                                "summary": "Error response"
+                                "summary": "Error response",
                             }
                         }
                     }
-                }
-            }
-        }
+                },
+            },
+        },
     )
     @action(detail=False, methods=["post"])
     def remove_service(self, request):
@@ -503,7 +513,10 @@ class CartViewSet(viewsets.ModelViewSet):
         summary="Checkout cart",
         description="Convert all items in the current user's cart to a new order. This action clears the cart.",
         request=None,
-        responses={200: {"status": "order created", "order_id": "integer"}, 400: {"status": "cart is empty"}}
+        responses={
+            200: {"status": "order created", "order_id": "integer"},
+            400: {"status": "cart is empty"},
+        },
     )
     @action(detail=False, methods=["post"])
     def checkout(self, request):
@@ -546,7 +559,7 @@ class CartViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="List user's orders",
-        description="Retrieve a list of all orders for the current user. Admins can see all orders."
+        description="Retrieve a list of all orders for the current user. Admins can see all orders.",
     ),
     retrieve=extend_schema(
         summary="Get order details",
@@ -556,10 +569,10 @@ class CartViewSet(viewsets.ModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the order to retrieve."
+                description="ID of the order to retrieve.",
             )
-        ]
-    )
+        ],
+    ),
 )
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
@@ -574,16 +587,20 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
             return cached_queryset
 
         # Optimize with prefetch_related for order items and services
-        queryset = Order.objects.prefetch_related(
-            Prefetch(
-                "orderitem_set", queryset=OrderItem.objects.select_related("service")
+        queryset = (
+            Order.objects.prefetch_related(
+                Prefetch(
+                    "orderitem_set",
+                    queryset=OrderItem.objects.select_related("service"),
+                )
             )
-        ).select_related("user").annotate(
-            annotated_total_price=Sum(
-                models.F("orderitem_set__service__price")
-                * models.F("orderitem_set__quantity")
-            ),
-            annotated_item_count=Sum("orderitem_set__quantity")
+            .select_related("user")
+            .annotate(
+                annotated_total_price=Sum(
+                    F("orderitem_set__service__price") * F("orderitem_set__quantity")
+                ),
+                annotated_item_count=Sum("orderitem_set__quantity"),
+            )
         )
 
         if self.request.user.role == "admin":
@@ -599,11 +616,11 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="List all reviews",
-        description="Retrieve a list of all service reviews. Admins can see all reviews, regular users can only see their own reviews."
+        description="Retrieve a list of all service reviews. Admins can see all reviews, regular users can only see their own reviews.",
     ),
     create=extend_schema(
         summary="Create a new review",
-        description="Leave a review for a service you've ordered. You can only review services you've completed orders for."
+        description="Leave a review for a service you've ordered. You can only review services you've completed orders for.",
     ),
     retrieve=extend_schema(
         summary="Get review details",
@@ -613,9 +630,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the review to retrieve."
+                description="ID of the review to retrieve.",
             )
-        ]
+        ],
     ),
     update=extend_schema(
         summary="Update a review",
@@ -625,9 +642,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the review to update."
+                description="ID of the review to update.",
             )
-        ]
+        ],
     ),
     partial_update=extend_schema(
         summary="Partially update a review",
@@ -637,9 +654,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the review to partially update."
+                description="ID of the review to partially update.",
             )
-        ]
+        ],
     ),
     destroy=extend_schema(
         summary="Delete a review",
@@ -649,10 +666,10 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 name="id",
                 type=OpenApiTypes.INT,
                 location=OpenApiParameter.PATH,
-                description="ID of the review to delete."
+                description="ID of the review to delete.",
             )
-        ]
-    )
+        ],
+    ),
 )
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer

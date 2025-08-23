@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Index
 
 
 class User(AbstractUser):
@@ -84,15 +83,17 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('PENDING_PAYMENT', 'Pending Payment'),
-        ('PROCESSING', 'Processing'),
-        ('COMPLETED', 'Completed'),
-        ('CANCELLED', 'Cancelled'),
+        ("PENDING_PAYMENT", "Pending Payment"),
+        ("PROCESSING", "Processing"),
+        ("COMPLETED", "Completed"),
+        ("CANCELLED", "Cancelled"),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     services = models.ManyToManyField(Service, through="OrderItem")
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="PENDING_PAYMENT")
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default="PENDING_PAYMENT"
+    )
 
     def __str__(self):
         return f"Order {self.id} for {self.user.username}"

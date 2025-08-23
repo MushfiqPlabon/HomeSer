@@ -1,12 +1,14 @@
 # HomeSer/tasks.py
 from celery import shared_task
-from django.core.mail import send_mail
 from django.conf import settings
+from django.core.mail import send_mail
+
 
 @shared_task
 def debug_task():
     """Simple debug task to test Celery configuration"""
     return "Hello from Celery!"
+
 
 @shared_task
 def send_email_task(subject, message, recipient_list):

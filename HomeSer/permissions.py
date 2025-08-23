@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+
 class IsOwnerOrAdmin(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object or admin users to edit or delete it.
@@ -11,4 +12,8 @@ class IsOwnerOrAdmin(permissions.BasePermission):
             return True
 
         # Write permissions are only allowed to the owner of the snippet or admin.
-        return obj.user == request.user or request.user.is_staff or request.user.is_superuser
+        return (
+            obj.user == request.user
+            or request.user.is_staff
+            or request.user.is_superuser
+        )
