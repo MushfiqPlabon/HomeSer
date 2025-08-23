@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} - HomeSer{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+    <!-- Service Details -->
+    <div class="lg:col-span-2">
+        <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-neon-green glow-pulse font-orbitron">{{ service.name }}</h1>
+            <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-text-secondary">{{ service.description }}</p>
+            <div class="flex flex-wrap justify-between items-center mb-6 sm:mb-8">
+                <span class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse">${{ service.price }}</span>
+                <span class="text-xl sm:text-2xl rating-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= service.average_rating|floatformat:"0"|add:"0" %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="text-text-primary ml-2">{{ service.average_rating|floatformat:1 }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Panel -->
+    <div>
+        <div class="acrylic-card p-6 sm:p-8 neon-border sticky top-24 animate-on-scroll animation-delay-100">
+            <div class="mb-6 sm:mb-8">
+                <span class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse">${{ service.price }}</span>
+            </div>
+            
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_to_cart' %}" class="mb-6 sm:mb-8">
+                {% csrf_token %}
+                <input type="hidden" name="service_id" value="{{ service.id }}">
+                <button type="submit" class="glow-button glow-button-green w-full text-xl sm:text-2xl py-3 sm:py-4 hover-glow">
+                    <i class="fas fa-shopping-cart mr-3"></i>Add to Cart
+                </button>
+            </form>
+            {% else %}
+            <div class="text-center mb-6 sm:mb-8">
+                <p class="text-lg sm:text-xl mb-4 sm:mb-6 text-text-secondary">Login to book this service</p>
+                <a href="{% url 'login' %}" class="glow-button glow-button-blue text-lg sm:text-xl px-6 py-3 sm:py-4 hover-glow inline-block">
+                    <i class="fas fa-sign-in-alt mr-3"></i>Login
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-12 sm:mt-16 max-w-6xl mx-auto">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neon-purple glow-pulse font-orbitron">Reviews</h2>
+    
+    {% if reviews %}
+    <div class="space-y-6 sm:space-y-8">
+        {% for review in reviews %}
+        <div class="review-card p-5 sm:p-6 neon-border-blue animate-on-scroll">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-bold text-neon-green text-lg">{{ review.user.username }}</span>
+                <span class="text-2xl rating-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            <p class="text-base sm:text-lg mb-4 text-text-secondary">{{ review.text }}</p>
+            <p class="text-text-tertiary text-right text-sm sm:text-base">{{ review.created_at|date:"M d, Y" }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state acrylic-card p-8 sm:p-12 neon-border text-center">
+        <div class="empty-state-icon text-neon-orange mb-4 sm:mb-6">
+            <i class="fas fa-comment-slash"></i>
+        </div>
+        <h3 class="text-xl sm:text-2xl font-bold mb-4 text-neon-orange">No Reviews Yet</h3>
+        <p class="mb-6 text-base sm:text-lg text-text-secondary">Be the first to review this service!</p>
+        {% if user.is_authenticated %}
+        <p class="text-sm sm:text-base text-text-tertiary">After completing an order for this service, you'll be able to leave a review.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

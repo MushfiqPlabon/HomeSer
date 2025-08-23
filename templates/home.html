@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - HomeSer{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- Hero Section -->
+    <div class="hero-section mb-12 sm:mb-16 md:mb-20" data-aos="fade-up">
+    <div class="hero-content px-4">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-neon-green glow-pulse font-orbitron text-center" data-aos="fade-up" data-aos-delay="100">Welcome to HomeSer</h1>
+        <p class="text-xl sm:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto text-center text-text-secondary" data-aos="fade-up" data-aos-delay="200">Your trusted platform for premium household services with a dark neon aesthetic.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
+            <a href="{% url 'services' %}" class="glow-button glow-button-blue text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 hover-glow w-full sm:w-auto justify-center">
+                <i class="fas fa-search mr-2"></i>Explore Services
+            </a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="glow-button glow-button-green text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 hover-glow w-full sm:w-auto justify-center">
+                <i class="fas fa-user-plus mr-2"></i>Get Started
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+    <!-- Value Propositions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mb-16 sm:mb-20">
+        <div class="value-prop-card acrylic-card p-6 sm:p-8 neon-border-blue hover-glow" data-service-type="cleaning" data-aos="fade-up" data-aos-delay="100">
+            <div class="value-prop-icon text-neon-blue mb-4">
+                <i class="fas fa-broom"></i>
+            </div>
+            <div class="value-prop-content">
+                <h2 class="text-xl sm:text-2xl font-bold mb-3 text-neon-blue">Premium Cleaning</h2>
+                <p class="mb-4 text-base sm:text-lg text-text-secondary">Professional cleaning services for your home and office spaces.</p>
+            </div>
+        </div>
+        <div class="value-prop-card acrylic-card p-6 sm:p-8 neon-border-green hover-glow" data-service-type="repair" data-aos="fade-up" data-aos-delay="200">
+            <div class="value-prop-icon text-neon-green mb-4">
+                <i class="fas fa-wrench"></i>
+            </div>
+            <div class="value-prop-content">
+                <h2 class="text-xl sm:text-2xl font-bold mb-3 text-neon-green">Expert Repairs</h2>
+                <p class="mb-4 text-base sm:text-lg text-text-secondary">Fast and reliable repair services for all household needs.</p>
+            </div>
+        </div>
+        <div class="value-prop-card acrylic-card p-6 sm:p-8 neon-border-pink hover-glow" data-service-type="plumbing" data-aos="fade-up" data-aos-delay="300">
+            <div class="value-prop-icon text-neon-pink mb-4">
+                <i class="fas fa-faucet"></i>
+            </div>
+            <div class="value-prop-content">
+                <h2 class="text-xl sm:text-2xl font-bold mb-3 text-neon-pink">Plumbing Services</h2>
+                <p class="mb-4 text-base sm:text-lg text-text-secondary">Professional plumbing solutions for leaks, installations, and maintenance.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose HomeSer -->
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-center text-neon-purple glow-pulse">Why Choose HomeSer?</h2>
+        <div class="space-y-4">
+            <div class="flex items-start p-4 rounded-lg bg-dark-gray/50 hover:bg-dark-gray/70 transition-all duration-300">
+                <i class="fas fa-check-circle text-neon-green mt-1 mr-3 text-xl"></i>
+                <span class="text-base sm:text-lg text-text-secondary">Vetted professionals with verified credentials and reviews</span>
+            </div>
+            <div class="flex items-start p-4 rounded-lg bg-dark-gray/50 hover:bg-dark-gray/70 transition-all duration-300">
+                <i class="fas fa-check-circle text-neon-green mt-1 mr-3 text-xl"></i>
+                <span class="text-base sm:text-lg text-text-secondary">Real-time tracking and updates on your service requests</span>
+            </div>
+            <div class="flex items-start p-4 rounded-lg bg-dark-gray/50 hover:bg-dark-gray/70 transition-all duration-300">
+                <i class="fas fa-check-circle text-neon-green mt-1 mr-3 text-xl"></i>
+                <span class="text-base sm:text-lg text-text-secondary">24/7 customer support with lightning-fast response times</span>
+            </div>
+            <div class="flex items-start p-4 rounded-lg bg-dark-gray/50 hover:bg-dark-gray/70 transition-all duration-300">
+                <i class="fas fa-check-circle text-neon-green mt-1 mr-3 text-xl"></i>
+                <span class="text-base sm:text-lg text-text-secondary">Transparent pricing with no hidden fees or surprise charges</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
