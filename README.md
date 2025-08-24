@@ -2,6 +2,10 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/HomeSer)
 
+## 🎓 Academic Context
+
+This project was developed as part of Phitron's Software Development Technologies (SDT) program, specifically for the Software Development Project (SDP) "Django-Final-Exam" in Milestone 5, Module 27.
+
 HomeSer is a modern, full-featured household service platform built with Django. It connects clients with service providers, offering a seamless experience for browsing, booking, and managing household services.
 
 ## Table of Contents
