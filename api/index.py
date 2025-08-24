@@ -1,1 +1,0 @@
-from HomeSer.wsgi import app
