@@ -249,8 +249,6 @@ if os.getenv("SERVERLESS"):
     USE_X_FORWARDED_HOST = True
     # Reduce persistent connection age for serverless
     DATABASES["default"]["CONN_MAX_AGE"] = 0
-    # Ensure static root exists for collectstatic
-    os.makedirs(STATIC_ROOT, exist_ok=True)
 
 # Email configuration
 # https://docs.djangoproject.com/en/stable/topics/email/
