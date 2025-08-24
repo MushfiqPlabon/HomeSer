@@ -159,6 +159,10 @@ STATICFILES_DIRS = [
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# Ensure static files directory exists
+import os
+os.makedirs(STATIC_ROOT, exist_ok=True)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -255,6 +259,18 @@ CSRF_COOKIE_SECURE = not DEBUG
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
 ).split(",")
+
+# Serverless-specific optimizations
+if os.getenv("SERVERLESS"):
+    # Optimize for Vercel's 10-second timeout
+    SESSION_COOKIE_AGE = 3600  # 1 hour instead of 2 weeks
+    SECURE_SSL_REDIRECT = False  # Let Vercel handle SSL termination
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
+    # Reduce persistent connection age for serverless
+    DATABASES["default"]["CONN_MAX_AGE"] = 0
+    # Ensure static root exists for collectstatic
+    os.makedirs(STATIC_ROOT, exist_ok=True)
 
 # Email configuration
 # https://docs.djangoproject.com/en/stable/topics/email/

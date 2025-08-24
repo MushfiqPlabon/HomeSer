@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load cache %}
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -25,6 +26,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-amoled-black text-text-primary min-h-screen flex flex-col font-sans">
+    {% cache 3600 header_navbar %}
     <header class="header py-4 sticky top-0 z-50 backdrop-blur-md bg-black/30">
         <div class="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 class="text-2xl font-bold text-neon-green glow-pulse font-orbitron">HomeSer 🏠</h1>
@@ -43,6 +45,7 @@
             </nav>
         </div>
     </header>
+    {% endcache %}
 
     <main class="flex-grow container mx-auto px-4 py-6 sm:py-8">
         {% if messages %}
@@ -58,6 +61,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% cache 3600 footer_content %}
     <footer class="footer py-6 mt-12 backdrop-blur-md bg-black/30">
         <div class="container mx-auto px-4 text-center">
             <p class="text-text-secondary">&copy; 2025 HomeSer. All rights reserved. 🏠</p>
@@ -77,6 +81,7 @@
             </div>
         </div>
     </footer>
+    {% endcache %}
 
     <!-- JavaScript -->
     <script src="{% static 'js/scripts.js' %}"></script>

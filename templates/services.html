@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cache %}
 
 {% block title %}Services - HomeSer{% endblock %}
 
@@ -26,6 +27,7 @@
         </div>
     </div>
     
+    {% cache 900 service_cards request.GET.search request.GET.sort request.user.id %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {% for service in services %}
         <div class="service-card p-5 sm:p-6 neon-border hover-glow transition-all duration-300 h-full flex flex-col animate-on-scroll material-3-expressive m3-elevated-card">
@@ -55,6 +57,7 @@
         </div>
         {% endfor %}
     </div>
+    {% endcache %}
     {% else %}
     <div class="empty-state acrylic-card p-8 sm:p-12 neon-border text-center fade-in animation-delay-300">
         <div class="empty-state-icon text-neon-orange mb-4 sm:mb-6">

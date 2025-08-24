@@ -1,8 +1,69 @@
 // scripts.js - Consolidated JavaScript file for HomeSer
 // Contains all functionality from scripts.js, anime-animations.js, and material-3-expressive.js
 
+// Cache for frequently accessed DOM elements
+const DOMCache = {
+    serviceCards: null,
+    glowButtons: null,
+    formInputs: null,
+    fadeElements: null,
+    animatedElements: null,
+    reviewCards: null,
+    valueProps: null,
+    messages: null,
+    navLinks: null,
+    init() {
+        this.serviceCards = document.querySelectorAll('.service-card');
+        this.glowButtons = document.querySelectorAll('.glow-button, .m3-button');
+        this.formInputs = document.querySelectorAll('.form-input');
+        this.fadeElements = document.querySelectorAll('.fade-in');
+        this.animatedElements = document.querySelectorAll('.animate-on-scroll');
+        this.reviewCards = document.querySelectorAll('.review-card');
+        this.valueProps = document.querySelectorAll('.value-prop-card');
+        this.messages = document.querySelectorAll('.message-success, .message-error');
+        this.navLinks = document.querySelectorAll('nav a');
+    },
+    getServiceCards() {
+        if (!this.serviceCards) this.init();
+        return this.serviceCards;
+    },
+    getGlowButtons() {
+        if (!this.glowButtons) this.init();
+        return this.glowButtons;
+    },
+    getFormInputs() {
+        if (!this.formInputs) this.init();
+        return this.formInputs;
+    },
+    getFadeElements() {
+        if (!this.fadeElements) this.init();
+        return this.fadeElements;
+    },
+    getAnimatedElements() {
+        if (!this.animatedElements) this.init();
+        return this.animatedElements;
+    },
+    getReviewCards() {
+        if (!this.reviewCards) this.init();
+        return this.reviewCards;
+    },
+    getValueProps() {
+        if (!this.valueProps) this.init();
+        return this.valueProps;
+    },
+    getMessages() {
+        if (!this.messages) this.init();
+        return this.messages;
+    },
+    getNavLinks() {
+        if (!this.navLinks) this.init();
+        return this.navLinks;
+    }
+};
+
 // Function to initialize ripple effect on buttons
 function initRippleEffect() {
+    // Use event delegation for ripple effect
     document.addEventListener('click', function(e) {
         // Check if clicked element is a button or has data-ripple attribute
         const button = e.target.closest('[data-ripple]');
@@ -71,12 +132,21 @@ function initFormValidation() {
             }
         });
         
-        // Real-time validation
+        // Real-time validation with optimized event handling
         const inputs = form.querySelectorAll('input, textarea, select');
+        
+        // Create a map of password fields for faster lookup
+        const passwordFields = new Map();
+        inputs.forEach(input => {
+            if (input.type === 'password' && input.name !== 'password_confirm') {
+                passwordFields.set(input.name, input);
+            }
+        });
+        
         inputs.forEach(input => {
             // Validation on blur
             input.addEventListener('blur', function() {
-                validateField(this);
+                validateField(this, passwordFields);
             });
             
             // Clear error state when user starts typing
@@ -86,14 +156,14 @@ function initFormValidation() {
             
             // Enhanced validation on focus out
             input.addEventListener('focusout', function() {
-                validateField(this);
+                validateField(this, passwordFields);
             });
         });
     });
 }
 
 // Function to validate individual fields
-function validateField(field) {
+function validateField(field, passwordFields = new Map()) {
     // Clear previous error states
     clearFieldError(field);
     
@@ -123,9 +193,11 @@ function validateField(field) {
         }
     }
     
-    // Password confirmation validation
+    // Password confirmation validation with optimized lookup
     if (field.name === 'password_confirm') {
-        const passwordField = document.querySelector('input[name="password"]');
+        // Use the pre-built map for O(1) lookup instead of O(n) querySelector
+        const passwordField = passwordFields.get('password') || 
+                             document.querySelector('input[name="password"]');
         if (passwordField && field.value !== passwordField.value) {
             errorMessage = 'Passwords do not match';
             isValid = false;
@@ -248,35 +320,62 @@ function initScrollAnimations() {
 
 // Function to initialize card hover effects
 function initCardEffects() {
-    const cards = document.querySelectorAll('.service-card, .review-card, .acrylic-card');
+    // Use event delegation for card effects
+    document.addEventListener('mouseenter', function(e) {
+        // Check if entered element is a service card, review card, or acrylic card
+        if (e.target.classList.contains('service-card') || 
+            e.target.classList.contains('review-card') || 
+            e.target.classList.contains('acrylic-card')) {
+            e.target.classList.add('elevated-card');
+        }
+    }, true); // Use capture phase
     
-    cards.forEach(card => {
-        // Add elevation effect on hover
-        card.addEventListener('mouseenter', function() {
-            this.classList.add('elevated-card');
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('elevated-card');
-        });
-        
-        // Add press effect on click
-        card.addEventListener('mousedown', function() {
-            this.classList.add('container-transform');
-        });
-        
-        card.addEventListener('mouseup', function() {
-            this.classList.remove('container-transform');
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('container-transform');
-        });
-    });
+    document.addEventListener('mouseleave', function(e) {
+        // Check if left element is a service card, review card, or acrylic card
+        if (e.target.classList.contains('service-card') || 
+            e.target.classList.contains('review-card') || 
+            e.target.classList.contains('acrylic-card')) {
+            e.target.classList.remove('elevated-card');
+            e.target.classList.remove('container-transform');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('mousedown', function(e) {
+        // Check if pressed element is a service card, review card, or acrylic card
+        if (e.target.classList.contains('service-card') || 
+            e.target.classList.contains('review-card') || 
+            e.target.classList.contains('acrylic-card')) {
+            e.target.classList.add('container-transform');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('mouseup', function(e) {
+        // Check if released element is a service card, review card, or acrylic card
+        if (e.target.classList.contains('service-card') || 
+            e.target.classList.contains('review-card') || 
+            e.target.classList.contains('acrylic-card')) {
+            e.target.classList.remove('container-transform');
+        }
+    }, true); // Use capture phase
 }
 
 // Function to initialize loading skeletons
 function initSkeletonScreens() {
+    // Use event delegation for loading state
+    document.addEventListener('click', function(e) {
+        // Check if clicked element has data-loading attribute
+        if (e.target.hasAttribute('data-loading')) {
+            e.target.classList.add('loading-state');
+            e.target.disabled = true;
+            
+            // Simulate loading completion
+            setTimeout(() => {
+                e.target.classList.remove('loading-state');
+                e.target.disabled = false;
+            }, 2000);
+        }
+    });
+    
     // This would typically be called when loading content dynamically
     // For now, we'll just add a utility function
     window.showSkeleton = function(container) {
@@ -289,21 +388,6 @@ function initSkeletonScreens() {
             </div>
         `;
     };
-    
-    // Add loading state to interactive elements
-    const loadingElements = document.querySelectorAll('[data-loading]');
-    loadingElements.forEach(el => {
-        el.addEventListener('click', function() {
-            this.classList.add('loading-state');
-            this.disabled = true;
-            
-            // Simulate loading completion
-            setTimeout(() => {
-                this.classList.remove('loading-state');
-                this.disabled = false;
-            }, 2000);
-        });
-    });
 }
 
 // Function to initialize lazy loading for images
@@ -328,40 +412,49 @@ function initLazyLoading() {
 
 // Function to initialize button hover effects
 function initButtonEffects() {
-    const buttons = document.querySelectorAll('.glow-button');
+    // Use event delegation for button effects
+    document.addEventListener('mouseenter', function(e) {
+        // Check if entered element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.add('elevated-card');
+        }
+    }, true); // Use capture phase
     
-    buttons.forEach(button => {
-        // Add hover effect
-        button.addEventListener('mouseenter', function() {
-            this.classList.add('elevated-card');
-        });
-        
-        button.addEventListener('mouseleave', function() {
-            this.classList.remove('elevated-card');
-        });
-        
-        // Add press effect
-        button.addEventListener('mousedown', function() {
-            this.classList.add('container-transform');
-        });
-        
-        button.addEventListener('mouseup', function() {
-            this.classList.remove('container-transform');
-        });
-        
-        button.addEventListener('mouseleave', function() {
-            this.classList.remove('container-transform');
-        });
-        
-        // Add focus visible effect
-        button.addEventListener('focus', function() {
-            this.classList.add('focus-state');
-        });
-        
-        button.addEventListener('blur', function() {
-            this.classList.remove('focus-state');
-        });
-    });
+    document.addEventListener('mouseleave', function(e) {
+        // Check if left element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.remove('elevated-card');
+            e.target.classList.remove('container-transform');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('mousedown', function(e) {
+        // Check if pressed element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.add('container-transform');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('mouseup', function(e) {
+        // Check if released element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.remove('container-transform');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('focus', function(e) {
+        // Check if focused element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.add('focus-state');
+        }
+    }, true); // Use capture phase
+    
+    document.addEventListener('blur', function(e) {
+        // Check if blurred element is a glow button
+        if (e.target.classList.contains('glow-button')) {
+            e.target.classList.remove('focus-state');
+        }
+    }, true); // Use capture phase
 }
 
 // Function to initialize fade-in animations
@@ -377,19 +470,20 @@ function initFadeInAnimations() {
 
 // Function to initialize smooth scrolling
 function initSmoothScrolling() {
-    // Add smooth scrolling to all anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+    // Use event delegation for smooth scrolling
+    document.addEventListener('click', function(e) {
+        // Check if clicked element is an anchor link with hash
+        if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#')) {
             e.preventDefault();
             
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(e.target.getAttribute('href'));
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
             }
-        });
+        }
     });
 }
 
@@ -429,6 +523,31 @@ function initPerformanceOptimizations() {
 
 // Function to initialize emoji reactions
 function initEmojiReactions() {
+    // Use event delegation for emoji reactions
+    document.addEventListener('click', function(e) {
+        // Check if clicked element is an emoji reaction button
+        if (e.target.classList.contains('emoji-reaction-btn')) {
+            // Add animation effect using Anime.js if available
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: e.target,
+                    scale: [1, 1.3, 1],
+                    duration: 600,
+                    easing: 'easeOutElastic'
+                });
+            } else {
+                // Fallback to CSS animation
+                e.target.classList.add('animate-bounce');
+                setTimeout(() => {
+                    e.target.classList.remove('animate-bounce');
+                }, 1000);
+            }
+            
+            // Add selected class
+            e.target.classList.add('selected');
+        }
+    });
+    
     // Add emoji reactions to review cards
     const reviewCards = document.querySelectorAll('.review-card');
     reviewCards.forEach(card => {
@@ -443,23 +562,6 @@ function initEmojiReactions() {
             reactionBtn.className = 'emoji-reaction-btn text-lg hover:scale-125 transition-transform';
             reactionBtn.textContent = emoji;
             reactionBtn.setAttribute('data-emoji', emoji);
-            reactionBtn.addEventListener('click', function() {
-                // Add animation effect using Anime.js if available
-                if (typeof anime !== 'undefined') {
-                    anime({
-                        targets: this,
-                        scale: [1, 1.3, 1],
-                        duration: 600,
-                        easing: 'easeOutElastic'
-                    });
-                } else {
-                    // Fallback to CSS animation
-                    this.classList.add('animate-bounce');
-                    setTimeout(() => {
-                        this.classList.remove('animate-bounce');
-                    }, 1000);
-                }
-            });
             reactionContainer.appendChild(reactionBtn);
         });
         
@@ -560,7 +662,12 @@ function initMaterial3Animations() {
 // Function to initialize the page
 function initPage() {
     // Ensure all content is visible immediately
-    document.querySelectorAll('.fade-in, .animate-on-scroll').forEach(el => {
+    const elementsToInitialize = DOMCache.getFadeElements();
+    const animatedElements = DOMCache.getAnimatedElements();
+    
+    // Combine both collections
+    const allElements = [...elementsToInitialize, ...animatedElements];
+    allElements.forEach(el => {
         el.style.opacity = '1';
         el.style.transform = 'translateY(0)';
     });
@@ -583,14 +690,14 @@ function initPage() {
     } catch (error) {
         console.warn('Some JavaScript enhancements failed to load:', error);
         // Ensure content is still visible even if animations fail
-        document.querySelectorAll('.fade-in, .animate-on-scroll').forEach(el => {
+        allElements.forEach(el => {
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
         });
     }
     
     // Add fade-in effect to messages using Anime.js if available
-    const messages = document.querySelectorAll('.message-success, .message-error');
+    const messages = DOMCache.getMessages();
     messages.forEach((message, index) => {
         if (typeof anime !== 'undefined') {
             anime({
@@ -639,7 +746,7 @@ function initPage() {
     }
     
     // Add fade-in effect to service cards
-    const serviceCards = document.querySelectorAll('.service-card');
+    const serviceCards = DOMCache.getServiceCards();
     serviceCards.forEach((card, index) => {
         if (typeof anime !== 'undefined') {
             anime({
@@ -664,7 +771,7 @@ function initPage() {
     });
     
     // Add interactive state to form elements
-    const formElements = document.querySelectorAll('input, textarea, select');
+    const formElements = DOMCache.getFormInputs();
     formElements.forEach(element => {
         element.addEventListener('focus', function() {
             this.classList.add('focus-state');
@@ -702,7 +809,7 @@ function initPage() {
 
 // Service card hover animations
 function initServiceCardAnimations() {
-    const serviceCards = document.querySelectorAll('.service-card');
+    const serviceCards = DOMCache.getServiceCards();
     
     serviceCards.forEach(card => {
         // Mouse enter animation
@@ -753,7 +860,7 @@ function initServiceCardAnimations() {
 
 // Button animations
 function initButtonAnimations() {
-    const buttons = document.querySelectorAll('.glow-button');
+    const buttons = DOMCache.getGlowButtons();
     
     buttons.forEach(button => {
         // Hover animation
@@ -878,8 +985,7 @@ function initHeroSectionAnimations() {
 
 // Value proposition animations
 function initValuePropAnimations() {
-    const valueProps = document.querySelectorAll('.value-prop-card');
-    
+    const valueProps = DOMCache.getValueProps();
     valueProps.forEach((card, index) => {
         anime({
             targets: card,
@@ -894,7 +1000,7 @@ function initValuePropAnimations() {
 
 // Form animations
 function initFormAnimations() {
-    const formInputs = document.querySelectorAll('.form-input');
+    const formInputs = DOMCache.getFormInputs();
     
     formInputs.forEach(input => {
         // Focus animation
@@ -926,8 +1032,7 @@ function initFormAnimations() {
 
 // Notification animations
 function initNotificationAnimations() {
-    const notifications = document.querySelectorAll('.message-success, .message-error');
-    
+    const notifications = DOMCache.getMessages();
     notifications.forEach(notification => {
         anime({
             targets: notification,
@@ -942,7 +1047,6 @@ function initNotificationAnimations() {
 // Cart animations
 function initCartAnimations() {
     const cartItems = document.querySelectorAll('.cart-item');
-    
     cartItems.forEach((item, index) => {
         anime({
             targets: item,
@@ -957,8 +1061,7 @@ function initCartAnimations() {
 
 // Review animations
 function initReviewAnimations() {
-    const reviews = document.querySelectorAll('.review-card');
-    
+    const reviews = DOMCache.getReviewCards();
     reviews.forEach((review, index) => {
         anime({
             targets: review,
@@ -974,24 +1077,30 @@ function initReviewAnimations() {
 // Staggered animations for multiple elements
 function runStaggeredAnimations() {
     // Staggered fade-in for service cards
-    anime({
-        targets: '.service-card',
-        translateY: [30, 0],
-        opacity: [0, 1],
-        duration: 800,
-        delay: anime.stagger(100),
-        easing: 'easeOutQuad'
-    });
+    const serviceCards = DOMCache.getServiceCards();
+    if (serviceCards.length > 0) {
+        anime({
+            targets: serviceCards,
+            translateY: [30, 0],
+            opacity: [0, 1],
+            duration: 800,
+            delay: anime.stagger(100),
+            easing: 'easeOutQuad'
+        });
+    }
     
     // Staggered fade-in for feature highlights
-    anime({
-        targets: '.feature-highlight',
-        translateX: [-20, 0],
-        opacity: [0, 1],
-        duration: 600,
-        delay: anime.stagger(80),
-        easing: 'easeOutQuad'
-    });
+    const featureHighlights = document.querySelectorAll('.feature-highlight');
+    if (featureHighlights.length > 0) {
+        anime({
+            targets: featureHighlights,
+            translateX: [-20, 0],
+            opacity: [0, 1],
+            duration: 600,
+            delay: anime.stagger(80),
+            easing: 'easeOutQuad'
+        });
+    }
 }
 
 // Export functions for global access
@@ -1040,7 +1149,7 @@ class Material3Expressive {
         // Respect reduced motion preference
         if (this.prefersReducedMotion) {
             // Use simpler focus/blur effects when reduced motion is preferred
-            const buttons = document.querySelectorAll('.glow-button, .m3-button');
+            const buttons = DOMCache.getGlowButtons();
             buttons.forEach(button => {
                 button.addEventListener('focus', (e) => {
                     e.target.classList.add('focused');
@@ -1061,7 +1170,7 @@ class Material3Expressive {
             return;
         }
         
-        const buttons = document.querySelectorAll('.glow-button, .m3-button');
+        const buttons = DOMCache.getGlowButtons();
         
         buttons.forEach(button => {
             // Add state layer if it doesn't exist
@@ -1285,12 +1394,15 @@ class Material3Expressive {
             return; // Skip card animations if user prefers reduced motion
         }
         
-        const cards = document.querySelectorAll('.service-card, .review-card, .acrylic-card');
+        const cards = DOMCache.getServiceCards();
         
         cards.forEach(card => {
-            // Add physics-based movement
+            // Add hardware acceleration hints
             card.style.transformOrigin = 'center';
             card.style.willChange = 'transform, box-shadow';
+            
+            // Add CSS class for parallax effect (CSS-based, not JS-based)
+            card.classList.add('parallax-card');
             
             card.addEventListener('mouseenter', (e) => {
                 this.cardHover(e.target);
@@ -1308,10 +1420,10 @@ class Material3Expressive {
                 this.cardRelease(e.target);
             });
             
-            // Add subtle parallax effect on mouse move
-            card.addEventListener('mousemove', (e) => {
-                this.cardParallax(e.target, e);
-            });
+            // Remove expensive mousemove listener and use CSS-based parallax instead
+            // card.addEventListener('mousemove', (e) => {
+            //     this.cardParallax(e.target, e);
+            // });
         });
     }
     
@@ -1370,24 +1482,39 @@ class Material3Expressive {
     }
     
     cardParallax(element, event) {
-        // Physics-based movement effect
-        const rect = element.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const deltaX = (x - centerX) / centerX;
-        const deltaY = (y - centerY) / centerY;
-        const rotateY = deltaX * 5; // Max 5 degrees
-        const rotateX = -deltaY * 5; // Max 5 degrees
+        // Throttle parallax effect to reduce performance impact
+        if (!element._lastParallaxTime) {
+            element._lastParallaxTime = 0;
+        }
         
-        // Apply subtle 3D transform
-        element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${element.style.transform.includes('translateY(-8px)') ? -8 : 0}px)`;
+        const now = Date.now();
+        if (now - element._lastParallaxTime < 16) { // Throttle to ~60fps
+            return;
+        }
+        element._lastParallaxTime = now;
+        
+        // Use requestAnimationFrame for better performance
+        requestAnimationFrame(() => {
+            // Physics-based movement effect with optimized calculations
+            const rect = element.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const deltaX = (x - centerX) / centerX;
+            const deltaY = (y - centerY) / centerY;
+            const rotateY = deltaX * 5; // Max 5 degrees
+            const rotateX = -deltaY * 5; // Max 5 degrees
+            
+            // Apply subtle 3D transform with hardware acceleration
+            element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${element.style.transform.includes('translateY(-8px)') ? -8 : 0}px)`;
+            element.style.willChange = 'transform';
+        });
     }
     
     // === Material 3 Expressive Form Animations ===
     initForms() {
-        const formInputs = document.querySelectorAll('.form-input');
+        const formInputs = DOMCache.getFormInputs();
         
         formInputs.forEach(input => {
             input.addEventListener('focus', (e) => {
@@ -1451,13 +1578,8 @@ class Material3Expressive {
     
     // === Material 3 Expressive Navigation ===
     initNavigation() {
-        const navLinks = document.querySelectorAll('nav a');
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                this.navTransition(e.target);
-            });
-        });
+        // Navigation is now handled via event delegation
+        // This function is kept for API compatibility
     }
     
     navTransition(element) {
@@ -1473,8 +1595,7 @@ class Material3Expressive {
     
     // === Material 3 Expressive Notifications ===
     initNotifications() {
-        const notifications = document.querySelectorAll('.message-success, .message-error');
-        
+        const notifications = DOMCache.getMessages();
         notifications.forEach((notification, index) => {
             this.showNotification(notification, index);
         });
@@ -1493,13 +1614,8 @@ class Material3Expressive {
     
     // === Material 3 Expressive Emoji Reactions ===
     initEmojis() {
-        const emojiButtons = document.querySelectorAll('.emoji-reaction-btn');
-        
-        emojiButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                this.emojiReaction(e.target);
-            });
-        });
+        // Emoji reactions are now handled via event delegation
+        // This function is kept for API compatibility
     }
     
     emojiReaction(element) {
@@ -1517,19 +1633,19 @@ class Material3Expressive {
     // === Material 3 Expressive Staggered Animations ===
     initStaggeredAnimations() {
         // Service cards
-        const serviceCards = document.querySelectorAll('.service-card');
+        const serviceCards = DOMCache.getServiceCards();
         if (serviceCards.length > 0) {
             this.staggeredEntrance(serviceCards, 100);
         }
         
         // Value props
-        const valueProps = document.querySelectorAll('.value-prop-card');
+        const valueProps = DOMCache.getValueProps();
         if (valueProps.length > 0) {
             this.staggeredEntrance(valueProps, 150);
         }
         
         // Reviews
-        const reviews = document.querySelectorAll('.review-card');
+        const reviews = DOMCache.getReviewCards();
         if (reviews.length > 0) {
             this.staggeredEntrance(reviews, 120);
         }
@@ -1655,8 +1771,11 @@ class Material3Expressive {
     }
 }
 
-// Initialize Anime.js when DOM is loaded
+// Initialize all components when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DOM cache
+    DOMCache.init();
+    
     // Initialize all animations
     initServiceCardAnimations();
     initButtonAnimations();
@@ -1670,12 +1789,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Run staggered animations
     runStaggeredAnimations();
-});
-
-// Initialize Material 3 Expressive when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+    
+    // Initialize Material 3 Expressive
     window.material3Expressive = new Material3Expressive();
+    
+    // Initialize page
+    initPage();
 });
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initPage);

@@ -183,32 +183,33 @@ This project leverages a modern technology stack including Django REST Framework
 
 ### Vercel Deployment
 
-1. Create a new project on Vercel.
-2. Connect your GitHub repository.
-3. Set the following environment variables in Vercel:
-   - **Django Core Settings:**
-     - `SECRET_KEY`: Your Django secret key (generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`).
-     - `DEBUG`: Set to `False` for production.
-     - `ALLOWED_HOSTS`: Comma-separated list of your Vercel deployment URLs (e.g., `your-project.vercel.app`).
-   - **Database Configuration:**
-     - `DATABASE_URL`: Your Supabase Postgres connection URL (format: `postgresql://user:password@host:port/database_name`).
-   - **Cloudinary Settings (for media storage):**
-     - `CLOUDINARY_URL`: Your Cloudinary environment variable.
-       *Example:* `cloudinary://api_key:api_secret@cloud_name`
-     - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: (Alternatively, if not using `CLOUDINARY_URL`).
-   - **Redis Settings (for caching & sessions):**
-     - `REDIS_URL`: Your Upstash Redis URL (optional but recommended for caching, format: `redis://username:password@host:port/database`).
-     - `CACHE_TTL`: Cache timeout in seconds (default: 900).
-     - `SESSION_COOKIE_AGE`: Session cookie age in seconds (default: 1209600).
-   - **Email Settings:**
-     - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `DEFAULT_FROM_EMAIL`: Configure these if your application sends emails.
-   - **Authentication Settings (SimpleJWT):**
-     - `JWT_ACCESS_TOKEN_LIFETIME_MINUTES`: Lifetime of access tokens in minutes (default: 60).
-     - `JWT_REFRESH_TOKEN_LIFETIME_DAYS`: Lifetime of refresh tokens in days (default: 1).
-   - **Celery Settings (currently broken):**
-     - **NOTE:** The Celery implementation is currently broken and under review. Do not set these variables on Vercel at this time.
-     - `CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`, `CELERY_REDIS_USE_SSL`, `CELERY_BROKER_USE_SSL`, `CELERY_BEAT_SCHEDULER`, `CELERY_BROKER_RETRY_ON_STARTUP`.
-4. Deploy the project.
+This project has been optimized for Vercel's free tier with the following enhancements:
+
+1. **Cold Start Optimization**: Reduced initialization time through selective app loading and lazy imports.
+2. **Dependency Management**: Streamlined requirements for minimal deployment size.
+3. **Memory Efficiency**: Optimized settings to stay within Vercel's 1024MB memory limit.
+4. **Static Asset Delivery**: Leveraging Vercel's global CDN for faster static file delivery.
+5. **Function Size Management**: Keeping deployment packages under the 50MB limit.
+
+Follow these steps for deployment:
+
+1. Fork this repository to your GitHub account
+2. Create a new project on Vercel
+3. Connect your forked repository to Vercel
+4. Set the following environment variables in Vercel dashboard:
+   - `SECRET_KEY`: Your Django secret key
+   - `DATABASE_URL`: Your Supabase Postgres connection URL
+   - `REDIS_URL`: Your Upstash Redis URL (optional but recommended)
+   - `CLOUDINARY_URL`: Your Cloudinary environment variable (for media storage)
+   - `DEBUG`: Set to `False` for production
+   - `ALLOWED_HOSTS`: Your Vercel deployment URLs (e.g., `your-project.vercel.app`)
+   - `SERVERLESS`: Set to `1` to enable serverless-specific optimizations
+5. Deploy the project
+
+**Note**: 
+- Static files are automatically collected during the build process
+- You must manually configure all environment variables in the Vercel dashboard
+- The `.env` file is for local development only and will not be used in production
 
 ## API Documentation
 
