@@ -5,7 +5,10 @@
       "src": "HomeSer/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "runtime": "python3.9"
+        "runtime": "python3.9",
+        "includeFiles": [
+          "HomeSer/**/*"
+        ]
       }
     }
   ],
@@ -17,5 +20,11 @@
   ],
   "env": {
     "SERVERLESS": "1"
-  }
+  },
+  "functions": {
+    "HomeSer/wsgi.py": {
+      "runtime": "vercel-python@3.9.18"
+    }
+  },
+  "buildCommand": "bash vercel-build.sh"
 }
