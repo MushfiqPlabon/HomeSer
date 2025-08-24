@@ -4,6 +4,7 @@ from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
 from rest_framework.routers import DefaultRouter
 
 from . import views
+from . import health_check
 
 router = DefaultRouter()
 router.register(r"users", views.UserViewSet)
@@ -25,5 +26,5 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("docs/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-    path("health/", views.health_check, name="health_check"),
+    path("health/", health_check.health_check, name="health_check"),
 ]

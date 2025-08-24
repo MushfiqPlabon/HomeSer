@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
     "django.contrib.sites",  # Required for email verification
     "rest_framework",
     "rest_framework_simplejwt",
@@ -55,9 +54,6 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "HomeSer",
 ]
-
-if DEBUG:
-    INSTALLED_APPS += ["whitenoise.runserver_nostatic"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -146,19 +142,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/stable/howto/static-files/
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR.parent / "staticfiles"
-STATICFILES_DIRS = [
-    BASE_DIR.parent / "static",
-]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# Ensure static files directory exists
-import os
-os.makedirs(STATIC_ROOT, exist_ok=True)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-auto-field

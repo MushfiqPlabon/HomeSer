@@ -1087,13 +1087,3 @@ def api_root(request, format=None):
         'documentation': reverse('swagger-ui', request=request, format=format),
         'health_check': reverse('health_check', request=request, format=format),
     })
-
-
-def health_check(request):
-    """
-    Health check endpoint for monitoring the API status.
-    """
-    return Response({
-        'status': 'healthy',
-        'message': 'HomeSer API is running successfully!'
-    })
