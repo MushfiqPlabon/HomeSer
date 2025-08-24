@@ -4,6 +4,14 @@
 
 HomeSer is a modern, full-featured household service platform built with Django. It connects clients with service providers, offering a seamless experience for browsing, booking, and managing household services.
 
+## Repository Branches
+
+This repository contains multiple branches for different development approaches:
+
+- **`main`** - The primary branch with the complete Django application (backend + HTML frontend)
+- **`back-end`** - Backend-only API branch for integration with modern frontend frameworks (React, Next.js, etc.)
+- **`html-front-end`** - Branch with the complete Django application (backend + HTML frontend) for traditional web development
+
 ## Table of Contents
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -48,7 +56,6 @@ HomeSer is a modern, full-featured household service platform built with Django.
 - **Task Queue**: Celery with Redis
 - **Deployment**: Vercel Serverless Functions
 - **Static Assets**: WhiteNoise for serving static files
-- **AI Analysis**: Repomix for codebase packing and analysis
 
 ## Getting Started
 
