@@ -8,6 +8,13 @@
   },
   "builds": [
     {
+      "src": "build.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
+    },
+    {
       "src": "HomeSer/wsgi.py",
       "use": "@vercel/python",
       "config": {
