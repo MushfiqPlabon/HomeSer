@@ -1063,3 +1063,37 @@ def logout_view(request):
     response = unset_jwt_cookies(response)
     messages.success(request, "You have been logged out successfully!")
     return response
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    Welcome to the HomeSer API!
+    
+    This is the root endpoint that provides links to all available API endpoints.
+    """
+    return Response({
+        'users': reverse('user-list', request=request, format=format),
+        'profiles': reverse('clientprofile-list', request=request, format=format),
+        'services': reverse('service-list', request=request, format=format),
+        'cart': reverse('cart-list', request=request, format=format),
+        'orders': reverse('order-list', request=request, format=format),
+        'reviews': reverse('review-list', request=request, format=format),
+        'documentation': reverse('swagger-ui', request=request, format=format),
+        'health_check': reverse('health_check', request=request, format=format),
+    })
+
+
+def health_check(request):
+    """
+    Health check endpoint for monitoring the API status.
+    """
+    return Response({
+        'status': 'healthy',
+        'message': 'HomeSer API is running successfully!'
+    })

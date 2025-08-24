@@ -14,6 +14,7 @@ router.register(r"orders", views.OrderViewSet, basename="order")
 router.register(r"reviews", views.ReviewViewSet, basename="review")
 
 urlpatterns = [
+    path("", views.api_root, name="api-root"),
     path("", include(router.urls)),
     path("auth/", include("rest_framework.urls")),
     # API documentation
@@ -24,4 +25,5 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("docs/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("health/", views.health_check, name="health_check"),
 ]

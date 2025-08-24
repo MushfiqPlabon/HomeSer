@@ -5,20 +5,11 @@
       "src": "HomeSer/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "runtime": "python3.9",
-        "includeFiles": [
-          "HomeSer/**/*",
-          "static/**/*",
-          "templates/**/*"
-        ]
+        "runtime": "python3.9"
       }
     }
   ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "HomeSer/wsgi.py"
@@ -26,7 +17,5 @@
   ],
   "env": {
     "SERVERLESS": "1"
-  },
-  "buildCommand": "pip install -r requirements.txt && npm install && npm run build && python manage.py collectstatic --noinput",
-  "outputDirectory": "staticfiles"
+  }
 }
