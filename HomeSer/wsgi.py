@@ -1,13 +1,15 @@
-# HomeSer/wsgi.py
+"""WSGI config for HomeSer project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
+"""
 
 import os
 
-# Optimize for serverless environments
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HomeSer.settings")
-
-# Enable serverless mode optimizations
-os.environ.setdefault("SERVERLESS", "1")
-
 from django.core.wsgi import get_wsgi_application
 
-application = get_wsgi_application()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'HomeSer.settings')
+
+app = get_wsgi_application()
