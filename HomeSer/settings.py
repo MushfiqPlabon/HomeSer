@@ -93,7 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "HomeSer.wsgi.application"
+WSGI_APPLICATION = "HomeSer.wsgi.app"
 
 # Database
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
