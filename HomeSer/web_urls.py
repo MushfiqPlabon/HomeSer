@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import health_check
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -17,4 +18,5 @@ urlpatterns = [
     path("accounts/login/", views.login_view, name="login"),
     path("accounts/logout/", views.logout_view, name="logout"),
     path("activate/<uidb64>/<token>/", views.activate, name="activate"),
+    path("health/", health_check.health_check, name="health_check"),
 ]

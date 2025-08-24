@@ -1,284 +1,212 @@
-# HomeSer
-This project was create for the Django-Final-Exam assignment of Phitron's SDT track's Software Development Project, Milestone 4, Module 27.
+# HomeSer - Household Service Platform
 
-HomeSer is a modern, full-featured Household Service Providing Platform built with Django. It provides a seamless experience for clients to browse, search, and order services, while offering a robust administrative interface for managing services, users, and roles.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/HomeSer)
 
-This project leverages a modern technology stack including Django REST Framework for the API, Tailwind CSS for the frontend, and is designed for production deployment on Vercel with a Supabase Postgres database.
+HomeSer is a modern, full-featured household service platform built with Django. It connects clients with service providers, offering a seamless experience for browsing, booking, and managing household services.
 
-## Current Development Status
-
-⚠️ **This project is currently in active development state.** While the core functionality is implemented, there may be bugs and incomplete features that need to be addressed before production deployment.
-**Note:** The Celery implementation is currently broken and under review.
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+- [Development](#development)
+  - [Running the Application](#running-the-application)
+  - [Tailwind CSS](#tailwind-css)
+- [Deployment](#deployment)
+  - [Vercel Deployment](#vercel-deployment)
+- [API Documentation](#api-documentation)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
-- User authentication and role management (Admin and Client roles)
-- Service browsing, searching, and sorting by rating
-- Cart management and checkout process
-- Client profile management with bio, profile picture, and social links
-- Admin capabilities to manage services and promote users
-- Reviews and ratings for services
-- Future-proofed for payment gateway integration
-- Enhanced UI/UX with improved typography and FontAwesome icons
+- **User Authentication**: Secure registration and login with email verification
+- **Service Management**: Browse, search, and filter household services
+- **Shopping Cart**: Add services to cart and manage bookings
+- **Order Processing**: Complete checkout process with order history
+- **User Profiles**: Customize profiles with bio and social links
+- **Admin Dashboard**: Manage services, users, and orders
+- **Reviews & Ratings**: Rate and review services
+- **Responsive Design**: Works on all device sizes
+- **Modern UI**: Neon-themed interface with smooth animations
+- **Health Checks**: Built-in health check endpoints for monitoring
+- **Asynchronous Tasks**: Background task processing with Celery
+- **API Documentation**: Auto-generated API docs with Swagger and Redoc
+- **Security**: JWT authentication with HTTP-only cookies
 
 ## Tech Stack
 
-- **Backend**: Django, Django REST Framework (DRF)
-- **Frontend**: Django HTML Templates, Tailwind CSS v3, FontAwesome
-- **Database**: SQLite (development), designed for Supabase Postgres (production)
-- **Media Storage**: Cloudinary (production)
-- **Caching**: Upstash Redis (production) - Optional
-- **Authentication**: JWT via djangorestframework-simplejwt, stored in secure, HTTP-only cookies
-- **Static Files**: Served by WhiteNoise
-- **Deployment**: Vercel (Free Tier) using the Python Serverless Function runtime
+- **Backend**: Django 5.2, Django REST Framework
+- **Frontend**: HTML Templates, Tailwind CSS 3, FontAwesome, Anime.js
+- **Database**: SQLite (development), PostgreSQL (production)
+- **Authentication**: JWT via SimpleJWT with secure HTTP-only cookies
+- **Storage**: Cloudinary for media files (production)
+- **Caching**: Redis (production), In-memory cache (development)
+- **Task Queue**: Celery with Redis
+- **Deployment**: Vercel Serverless Functions
+- **Static Assets**: WhiteNoise for serving static files
+- **AI Analysis**: Repomix for codebase packing and analysis
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.10+ (required for Django 5.0.4)
+- Python 3.10 or higher
 - Node.js and npm (for Tailwind CSS)
-- A Supabase account
-- A Cloudinary account
-- An Upstash account (optional)
+- Git
 
 ### Installation
 
 1. Clone the repository:
+```bash
+git clone https://github.com/your-username/HomeSer.git
+cd HomeSer
+```
 
-   ```
-   git clone https://github.com/MushfiqPlabon/HomeSer.git
-   cd HomeSer
-   ```
+2. Create a virtual environment:
+```bash
+python -m venv venv
+# On Windows
+venv\Scripts\activate
+# On macOS/Linux
+source venv/bin/activate
+```
 
-2. Create a virtual environment and activate it:
+3. Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-   ```
+4. Install Node.js dependencies:
+```bash
+npm install
+```
 
-3. Install the required packages:
+5. Set up environment variables (see [Environment Variables](#environment-variables))
 
-   ```
-   pip install -r requirements.txt
-   ```
+6. Run database migrations:
+```bash
+python manage.py migrate
+```
 
-4. Set up environment variables:
-   Copy `.env.example` to `.env` and fill in the required values. This file contains all necessary environment variables for the project.
+7. Create a superuser (optional):
+```bash
+python manage.py createsuperuser
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+### Environment Variables
 
-   Then edit the `.env` file with your actual values. Below is a summary of the key variables:
+Copy the example environment file and update the values:
+```bash
+cp .env.example .env
+```
 
-   **Django Core Settings:**
-   - `SECRET_KEY`: Your Django secret key. **Generate a new one for production:** `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
-   - `DEBUG`: Set to `True` for development, `False` for production.
-   - `ALLOWED_HOSTS`: Comma-separated list of hostnames that your Django site can serve. E.g., `localhost,127.0.0.1,yourdomain.com`.
+Key environment variables:
+- `SECRET_KEY`: Django secret key (generate a new one for production)
+- `DEBUG`: Set to `False` for production
+- `DATABASE_URL`: PostgreSQL connection string for production
+- `CLOUDINARY_URL`: For media storage in production
+- `REDIS_URL`: For caching in production
 
-   **Database Configuration:**
-   - `DATABASE_URL`: Full connection string for your PostgreSQL database (e.g., from Supabase). If left empty, SQLite will be used for development.
-     *Example:* `postgresql://user:password@host:port/database_name`
-   - *Optional individual DB credentials (only if `DATABASE_URL` is not used):* `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME`.
+For local development, you can use default values in the `.env` file.
 
-   **Cloudinary Settings (for media storage):**
-   - `CLOUDINARY_URL`: Your Cloudinary environment variable.
-     *Example:* `cloudinary://api_key:api_secret@cloud_name`
-   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Individual credentials if `CLOUDINARY_URL` is not used.
+## Development
 
-   **Redis Settings (for caching & sessions):**
-   - `REDIS_URL`: Your Redis connection URL (e.g., from Upstash). If left empty, a local memory cache will be used.
-     *Example:* `redis://username:password@host:port/database`
-   - `CACHE_TTL`: Cache timeout in seconds (default: 900).
-   - `SESSION_COOKIE_AGE`: Session cookie age in seconds (default: 1209600).
+### Running the Application
 
-   **Celery Settings (for background tasks):**
-   - **NOTE:** The Celery implementation is currently broken and under review. These settings are not functional at the moment.
-   - `CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`, `CELERY_REDIS_USE_SSL`, `CELERY_BROKER_USE_SSL`, `CELERY_BEAT_SCHEDULER`, `CELERY_BROKER_RETRY_ON_STARTUP`.
+Start the development server:
+```bash
+python manage.py runserver
+```
 
-   **Email Settings:**
-   - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `DEFAULT_FROM_EMAIL`: Configure these for sending emails (e.g., password reset, notifications).
+The application will be available at `http://localhost:8000`
 
-   **Authentication Settings (SimpleJWT):**
-   - `JWT_ACCESS_TOKEN_LIFETIME_MINUTES`: Lifetime of access tokens in minutes (default: 60).
-   - `JWT_REFRESH_TOKEN_LIFETIME_DAYS`: Lifetime of refresh tokens in days (default: 1).
+### Tailwind CSS
 
-   For development, you can often leave most values as defaults or use local services. For production deployment, you'll need to set up accounts with external services like Supabase, Cloudinary, and Upstash.
+Compile CSS in development mode (with watch):
+```bash
+npm run dev
+```
 
-5. Run database migrations:
+Build CSS for production:
+```bash
+npm run build
+```
 
-   ```
-   python manage.py migrate
-   ```
-
-6. Collect static files:
-
-   ```
-   python manage.py collectstatic
-   ```
-
-7. Start the development server:
-   ```
-   python manage.py runserver
-   ```
-
-### Tailwind CSS Setup
-
-1. Install Tailwind CSS:
-
-   ```
-   npm install -D tailwindcss@3
-   npx tailwindcss init
-   ```
-
-2. Configure your template paths in `tailwind.config.js`:
-
-   ```js
-   /** @type {import('tailwindcss').Config} */
-   module.exports = {
-     content: ["./templates/**/*.html"],
-     theme: {
-       extend: {
-         colors: {
-           "neon-green": "#39ff14",
-           "neon-blue": "#00ffff",
-         },
-       },
-     },
-     plugins: [],
-   };
-   ```
-
-3. Add the Tailwind directives to your CSS file (`static/css/styles.css`):
-
-   ```css
-   @tailwind base;
-   @tailwind components;
-   @tailwind utilities;
-
-   /* Custom styles */
-   .text-neon-green {
-     color: #39ff14;
-   }
-
-   .text-neon-blue {
-     color: #00ffff;
-   }
-
-   .bg-neon-green {
-     background-color: #39ff14;
-   }
-
-   .bg-neon-blue {
-     background-color: #00ffff;
-   }
-   ```
-
-4. Start the Tailwind CLI build process:
-   ```
-   npx tailwindcss -i ./static/css/styles.css -o ./static/css/output.css --watch
-   ```
+## Deployment
 
 ### Vercel Deployment
 
-This project has been optimized for Vercel's free tier with the following enhancements:
-
-1. **Cold Start Optimization**: Reduced initialization time through selective app loading and lazy imports.
-2. **Dependency Management**: Streamlined requirements for minimal deployment size.
-3. **Memory Efficiency**: Optimized settings to stay within Vercel's 1024MB memory limit.
-4. **Static Asset Delivery**: Leveraging Vercel's global CDN for faster static file delivery.
-5. **Function Size Management**: Keeping deployment packages under the 50MB limit.
-
-Follow these steps for deployment:
+This project is optimized for deployment on Vercel's free tier:
 
 1. Fork this repository to your GitHub account
 2. Create a new project on Vercel
 3. Connect your forked repository to Vercel
-4. Set the following environment variables in Vercel dashboard:
+4. Configure environment variables in the Vercel dashboard:
    - `SECRET_KEY`: Your Django secret key
-   - `DATABASE_URL`: Your Supabase Postgres connection URL
-   - `REDIS_URL`: Your Upstash Redis URL (optional but recommended)
-   - `CLOUDINARY_URL`: Your Cloudinary environment variable (for media storage)
+   - `DATABASE_URL`: Your PostgreSQL connection URL
+   - `CLOUDINARY_URL`: Your Cloudinary environment variable
+   - `REDIS_URL`: Your Redis URL (optional)
    - `DEBUG`: Set to `False` for production
-   - `ALLOWED_HOSTS`: Your Vercel deployment URLs (e.g., `your-project.vercel.app`)
-   - `SERVERLESS`: Set to `1` to enable serverless-specific optimizations
+   - `ALLOWED_HOSTS`: Your Vercel deployment URLs
+   - `SERVERLESS`: Set to `1`
+
 5. Deploy the project
 
-**Note**: 
+**Important Notes:**
 - Static files are automatically collected during the build process
-- You must manually configure all environment variables in the Vercel dashboard
 - The `.env` file is for local development only and will not be used in production
+- All environment variables must be configured in the Vercel dashboard
 
 ## API Documentation
 
-The API documentation is available at `/api/docs/swagger/` or `/api/docs/redoc/` when the development server is running.
+The API documentation is available at:
+- Swagger UI: `/api/docs/swagger/`
+- Redoc: `/api/docs/redoc/`
 
-## Email Verification
-
-This project includes email verification for new user registrations. When a user registers, they will receive an email with an activation link. They must click this link to activate their account before they can log in.
-
-### Configuration
-
-The project uses a dynamic email configuration:
-- If email credentials are provided in the `.env` file, it will use real email sending via SMTP
-- If no email credentials are provided, it will fall back to printing emails to the console
-
-This works regardless of whether DEBUG is True or False.
-
-For production email sending with Gmail, you need to:
-
-1. Enable 2-Factor Authentication on your Google account
-2. Generate an App Password for "Mail" at https://myaccount.google.com/apppasswords
-3. Use the 16-character app password in your `.env` file:
+## Project Structure
 
 ```
-# Email Settings for Gmail
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-16-character-app-password
-EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=your-email@gmail.com
+HomeSer/
+├── HomeSer/              # Main Django application
+│   ├── management/       # Custom management commands
+│   ├── migrations/       # Database migrations
+│   ├── __init__.py      # Package initializer
+│   ├── admin.py         # Django admin configuration
+│   ├── api_urls.py      # API route definitions
+│   ├── asgi.py          # ASGI configuration
+│   ├── celery.py        # Celery configuration
+│   ├── decorators.py    # Custom decorators
+│   ├── forms.py         # Django forms
+│   ├── health_check.py  # Health check endpoints
+│   ├── jwt_utils.py     # JWT utility functions
+│   ├── middleware.py    # Custom middleware
+│   ├── models.py        # Data models
+│   ├── permissions.py   # Custom permissions
+│   ├── serializers.py   # DRF serializers
+│   ├── settings.py      # Django settings
+│   ├── tasks.py         # Celery tasks
+│   ├── tokens.py        # Token management
+│   ├── urls.py          # Main URL configuration
+│   ├── views.py         # View functions
+│   ├── web_urls.py      # Web route definitions
+│   └── wsgi.py          # WSGI configuration
+├── static/              # Static assets (CSS, JS, images)
+│   ├── css/             # CSS files
+│   ├── js/              # JavaScript files
+│   └── images/          # Image assets
+├── staticfiles/         # Collected static files (generated)
+├── templates/           # HTML templates
+├── manage.py            # Django management script
+├── requirements.txt     # Python dependencies
+├── package.json         # Node.js dependencies (Tailwind CSS)
+└── vercel.json          # Vercel deployment configuration
 ```
 
-For other email providers, configure the appropriate SMTP settings:
-
-```
-# Email Settings for Other Providers
-EMAIL_HOST=your-smtp-server.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@yourdomain.com
-EMAIL_HOST_PASSWORD=your-email-password
-EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=your-email@yourdomain.com
-```
-
-### Testing Email Verification
-
-1. Start the development server:
-   ```bash
-   python manage.py runserver
-   ```
-
-2. Navigate to http://localhost:8000/accounts/register/ and register a new user
-
-3. Check your inbox for the activation email (if using real email) or the console output (if using console backend)
-
-4. Copy the activation link from the email and paste it in your browser
-
-5. The account should be activated and you'll be logged in automatically
-
-### Customizing Email Templates
-
-The email templates can be found in:
-- `templates/registration/activation_email.html` (HTML version)
-- `templates/registration/activation_email.txt` (Plain text version)
-
-You can customize these templates to match your brand.
-
-## API Documentation
+## Contributing
 
 1. Fork the repository
 2. Create a new branch (`git checkout -b feature/your-feature`)
@@ -288,4 +216,4 @@ You can customize these templates to match your brand.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
