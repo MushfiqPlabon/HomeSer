@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-5.x-green?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Django](https://img.shields.io/badge/Django-4.2.4-green?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 Welcome to **HomeSer**! 🎉 This project is a modern, full-stack web application designed to connect users with various household services. Think of it as your one-stop shop for finding reliable help with tasks around your home. Whether you need a plumber, an electrician, a cleaner, or any other household service, HomeSer makes it easy to discover, book, and manage services.
