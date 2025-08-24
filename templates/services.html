@@ -18,7 +18,7 @@
     {% if services %}
     <!-- Sorting Options -->
     <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 fade-in animation-delay-200">
-        <p class="text-base sm:text-lg text-text-secondary">{{ services|length }} service{{ services|length|pluralize }} found</p>
+        <p class="text-base sm:text-lg text-text-secondary">{{ services|length }} service{{ services|length|pluralize }} found ✅</p>
         <div>
             <a href="?sort=rating" class="glow-button glow-button-purple px-4 py-2 text-sm sm:text-base hover-glow {% if request.GET.sort == 'rating' %}glow-pulse{% endif %} justify-center">
                 <i class="fas fa-sort-amount-down mr-2"></i>Sort by Rating
@@ -28,8 +28,11 @@
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {% for service in services %}
-        <div class="service-card p-5 sm:p-6 neon-border hover-glow transition-all duration-300 h-full flex flex-col animate-on-scroll">
-            <h2 class="text-xl sm:text-2xl font-bold mb-3 text-neon-blue">{{ service.name }}</h2>
+        <div class="service-card p-5 sm:p-6 neon-border hover-glow transition-all duration-300 h-full flex flex-col animate-on-scroll material-3-expressive m3-elevated-card">
+            <div class="flex justify-between items-start mb-3">
+                <h2 class="text-xl sm:text-2xl font-bold text-neon-blue">{{ service.name }}</h2>
+                <span class="text-neon-green text-lg">💰</span>
+            </div>
             <p class="mb-4 text-text-secondary flex-grow">{{ service.description|truncatewords:20 }}</p>
             <div class="flex justify-between items-center mb-4">
                 <span class="text-xl sm:text-2xl font-bold text-neon-green">${{ service.price }}</span>
@@ -41,7 +44,7 @@
                             <i class="far fa-star"></i>
                         {% endif %}
                     {% endfor %}
-                    <span class="text-text-primary ml-1 sm:ml-2">{{ service.average_rating|floatformat:1 }}</span>
+                    <span class="text-text-primary ml-1 sm:ml-2">{{ service.average_rating|floatformat:1 }} ⭐</span>
                 </span>
             </div>
             <div class="mt-4">

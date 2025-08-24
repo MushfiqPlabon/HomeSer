@@ -6,11 +6,11 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
     <!-- Service Details -->
     <div class="lg:col-span-2">
-        <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-neon-green glow-pulse font-orbitron">{{ service.name }}</h1>
+        <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll material-3-expressive m3-elevated-card">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-neon-green glow-pulse font-orbitron">{{ service.name }} 🏷️</h1>
             <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-text-secondary">{{ service.description }}</p>
             <div class="flex flex-wrap justify-between items-center mb-6 sm:mb-8">
-                <span class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse">${{ service.price }}</span>
+                <span class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse">💰 ${{ service.price }}</span>
                 <span class="text-xl sm:text-2xl rating-stars">
                     {% for i in "12345" %}
                         {% if forloop.counter <= service.average_rating|floatformat:"0"|add:"0" %}
@@ -19,7 +19,7 @@
                             <i class="far fa-star"></i>
                         {% endif %}
                     {% endfor %}
-                    <span class="text-text-primary ml-2">{{ service.average_rating|floatformat:1 }}</span>
+                    <span class="text-text-primary ml-2">{{ service.average_rating|floatformat:1 }} ⭐</span>
                 </span>
             </div>
         </div>
@@ -53,7 +53,7 @@
 </div>
 
 <div class="mt-12 sm:mt-16 max-w-6xl mx-auto">
-    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neon-purple glow-pulse font-orbitron">Reviews</h2>
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-neon-purple glow-pulse font-orbitron">Reviews 💬</h2>
     
     {% if reviews %}
     <div class="space-y-6 sm:space-y-8">

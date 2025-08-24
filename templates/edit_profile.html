@@ -3,7 +3,7 @@
 {% block title %}Edit Profile - HomeSer{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-neon-green glow-pulse font-orbitron">Edit Profile</h1>
+<h1 class="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-neon-green glow-pulse font-orbitron">Edit Profile ✏️</h1>
 
 <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow max-w-2xl mx-auto">
     <form method="post" enctype="multipart/form-data">
@@ -11,12 +11,14 @@
         <div class="space-y-5 sm:space-y-6">
             {% for field in form %}
             <div>
-                <label class="block text-lg font-bold mb-2 text-neon-blue">{{ field.label }}</label>
+                <label class="block text-lg font-bold mb-2 text-neon-blue">
+                    <i class="fas fa-{% if 'bio' in field.name %}pen{% elif 'picture' in field.name %}image{% elif 'links' in field.name %}link{% else %}user{% endif %} mr-2"></i>{{ field.label }}
+                </label>
                 {{ field }}
                 {% if field.errors %}
                 <ul class="mt-2">
                     {% for error in field.errors %}
-                    <li class="text-red-500 text-sm sm:text-base">{{ error }}</li>
+                    <li class="text-red-500 text-sm sm:text-base"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</li>
                     {% endfor %}
                 </ul>
                 {% endif %}

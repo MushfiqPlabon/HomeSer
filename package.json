@@ -17,5 +17,8 @@
   "license": "MIT",
   "devDependencies": {
     "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "animejs": "^3.2.1"
   }
 }

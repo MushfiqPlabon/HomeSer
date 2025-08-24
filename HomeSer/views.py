@@ -13,41 +13,22 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from drf_spectacular.utils import (
-    OpenApiParameter,
-    OpenApiTypes,
-    extend_schema,
-    extend_schema_view,
-)
+from drf_spectacular.utils import (OpenApiParameter, OpenApiTypes,
+                                   extend_schema, extend_schema_view)
 from rest_framework import permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework_simplejwt.token_blacklist.models import (
-    BlacklistedToken,
-    OutstandingToken,
-)
+from rest_framework_simplejwt.token_blacklist.models import (BlacklistedToken,
+                                                             OutstandingToken)
 
 from .decorators import jwt_login_required
 from .forms import ClientProfileForm
-from .models import (
-    Cart,
-    CartItem,
-    ClientProfile,
-    Order,
-    OrderItem,
-    Review,
-    Service,
-    User,
-)
+from .models import (Cart, CartItem, ClientProfile, Order, OrderItem, Review,
+                     Service, User)
 from .permissions import IsOwnerOrAdmin
-from .serializers import (
-    CartSerializer,
-    ClientProfileSerializer,
-    OrderSerializer,
-    ReviewSerializer,
-    ServiceSerializer,
-    UserSerializer,
-)
+from .serializers import (CartSerializer, ClientProfileSerializer,
+                          OrderSerializer, ReviewSerializer, ServiceSerializer,
+                          UserSerializer)
 from .tokens import account_activation_token
 
 
@@ -1044,7 +1025,8 @@ def login_view(request):
                 messages.success(request, f"Welcome back, {username}!")
 
                 # Create JWT tokens
-                from .jwt_utils import create_jwt_tokens_for_user, set_jwt_cookies
+                from .jwt_utils import (create_jwt_tokens_for_user,
+                                        set_jwt_cookies)
 
                 tokens = create_jwt_tokens_for_user(user)
 

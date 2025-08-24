@@ -13,12 +13,14 @@
                 <div class="space-y-5 sm:space-y-6">
                     {% for field in form %}
                     <div class="form-group animate-on-scroll animation-delay-{{ forloop.counter }}00">
-                        <label class="block text-lg font-bold mb-2 text-neon-blue">{{ field.label }}</label>
+                        <label class="block text-lg font-bold mb-2 text-neon-blue">
+                            <i class="fas fa-user mr-2"></i>{{ field.label }}
+                        </label>
                         {{ field }}
                         {% if field.errors %}
                         <ul class="mt-2">
                             {% for error in field.errors %}
-                            <li class="text-red-500 text-sm sm:text-base">{{ error }}</li>
+                            <li class="text-red-500 text-sm sm:text-base"><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</li>
                             {% endfor %}
                         </ul>
                         {% endif %}

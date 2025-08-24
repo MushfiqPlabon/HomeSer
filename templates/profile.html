@@ -8,7 +8,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
     <!-- Profile Picture -->
     <div class="lg:col-span-1">
-        <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll">
+        <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll material-3-expressive m3-elevated-card">
             {% if profile.profile_picture %}
             <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="w-32 h-32 sm:w-48 sm:h-48 rounded-full mx-auto neon-border-green object-cover animate-on-scroll">
             {% else %}
@@ -23,18 +23,18 @@
     <div class="lg:col-span-2">
         <div class="acrylic-card p-6 sm:p-8 neon-border hover-glow animate-on-scroll animation-delay-100">
             <div class="mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-800">
-                <h2 class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse mb-2">{{ user.username }}</h2>
-                <p class="text-lg sm:text-xl text-neon-green mb-4">{{ user.email }}</p>
-                <p class="text-base sm:text-lg text-text-secondary">Role: <span class="font-bold text-neon-purple">{{ user.role|title }}</span></p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-neon-blue glow-pulse mb-2">{{ user.username }} 👤</h2>
+                <p class="text-lg sm:text-xl text-neon-green mb-4"><i class="fas fa-envelope mr-2"></i>{{ user.email }}</p>
+                <p class="text-base sm:text-lg text-text-secondary"><i class="fas fa-user-tag mr-2"></i>Role: <span class="font-bold text-neon-purple">{{ user.role|title }}</span></p>
             </div>
             
             <div class="mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-800">
-                <h3 class="text-xl sm:text-2xl font-bold mb-4 text-neon-green">Bio</h3>
+                <h3 class="text-xl sm:text-2xl font-bold mb-4 text-neon-green">Bio 📝</h3>
                 <p class="text-base sm:text-lg text-text-secondary">{{ profile.bio|default:"No bio provided." }}</p>
             </div>
             
             <div class="mb-6 sm:mb-8">
-                <h3 class="text-xl sm:text-2xl font-bold mb-4 text-neon-green">Social Links</h3>
+                <h3 class="text-xl sm:text-2xl font-bold mb-4 text-neon-green">Social Links 🔗</h3>
                 {% if profile.social_links %}
                 <ul class="space-y-2">
                     {% for link in profile.social_links %}
@@ -42,7 +42,7 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-text-tertiary text-base sm:text-lg">No social links provided.</p>
+                <p class="text-text-tertiary text-base sm:text-lg">No social links provided. 🙁</p>
                 {% endif %}
             </div>
             

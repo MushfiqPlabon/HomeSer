@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 export const content = [
   "./static/js/**/*.js",
-  "./templates/**/*.{html,py}", // Look for HTML files in a 'templates' folder at the project root
-  "./**/templates/**/*.{html,py}", // Look for HTML files in the 'events' app's templates folder
+  "./templates/**/*.{html,py,js}", // Look for HTML files in a 'templates' folder at the project root
+  "./**/templates/**/*.{html,py,js}", // Look for HTML files in the 'events' app's templates folder
   "./static/src/js/**/*.js",
 ];
 export const darkMode = "class";
