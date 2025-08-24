@@ -10,5 +10,10 @@
         "dest": "HomeSer/wsgi.py"
       }
     ],
-    "buildCommand": "bash vercel-setup.sh"
+    "buildCommand": "bash vercel-setup.sh",
+    "functions": {
+      "HomeSer/wsgi.py": {
+        "runtime": "vercel-python@3.9.18"
+      }
+    }
 }
