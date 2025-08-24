@@ -1,0 +1,2 @@
+# This file makes the project directory a Python package
+# Required for Vercel deployments

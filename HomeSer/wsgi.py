@@ -27,8 +27,10 @@ from django.core.wsgi import get_wsgi_application
 # Create the WSGI application
 application = get_wsgi_application()
 
-# Vercel requires an 'app' variable that exposes the WSGI application
-app = application
+# Vercel requires an 'app' variable that exposes the WSGI callable
+# This needs to be a callable, not the result of calling get_wsgi_application()
+def app(environ, start_response):
+    return application(environ, start_response)
 
 # Also provide handler for compatibility
-handler = application
+handler = app
