@@ -55,55 +55,18 @@ HomeSer is a modern, full-featured household service platform built with Django.
 ### Prerequisites
 
 - Python 3.10 or higher
-- Node.js and npm (for Tailwind CSS)
-- Git
-
 ### Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/your-username/HomeSer.git
-cd HomeSer
-```
-
 2. Create a virtual environment:
-```bash
-python -m venv venv
-# On Windows
-venv\Scripts\activate
-# On macOS/Linux
-source venv/bin/activate
-```
-
 3. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Install Node.js dependencies:
-```bash
-npm install
-```
-
 5. Set up environment variables (see [Environment Variables](#environment-variables))
 
 6. Run database migrations:
-```bash
-python manage.py migrate
-```
-
 7. Create a superuser (optional):
-```bash
-python manage.py createsuperuser
-```
-
 ### Environment Variables
 
 Copy the example environment file and update the values:
-```bash
-cp .env.example .env
-```
-
 Key environment variables:
 - `SECRET_KEY`: Django secret key (generate a new one for production)
 - `DEBUG`: Set to `False` for production
@@ -118,23 +81,7 @@ For local development, you can use default values in the `.env` file.
 ### Running the Application
 
 Start the development server:
-```bash
-python manage.py runserver
-```
-
 The application will be available at `http://localhost:8000`
-
-### Tailwind CSS
-
-Compile CSS in development mode (with watch):
-```bash
-npm run dev
-```
-
-Build CSS for production:
-```bash
-npm run build
-```
 
 ## Deployment
 
@@ -168,43 +115,6 @@ The API documentation is available at:
 - Redoc: `/api/docs/redoc/`
 
 ## Project Structure
-
-```
-HomeSer/
-├── HomeSer/              # Main Django application
-│   ├── management/       # Custom management commands
-│   ├── migrations/       # Database migrations
-│   ├── __init__.py      # Package initializer
-│   ├── admin.py         # Django admin configuration
-│   ├── api_urls.py      # API route definitions
-│   ├── asgi.py          # ASGI configuration
-│   ├── celery.py        # Celery configuration
-│   ├── decorators.py    # Custom decorators
-│   ├── forms.py         # Django forms
-│   ├── health_check.py  # Health check endpoints
-│   ├── jwt_utils.py     # JWT utility functions
-│   ├── middleware.py    # Custom middleware
-│   ├── models.py        # Data models
-│   ├── permissions.py   # Custom permissions
-│   ├── serializers.py   # DRF serializers
-│   ├── settings.py      # Django settings
-│   ├── tasks.py         # Celery tasks
-│   ├── tokens.py        # Token management
-│   ├── urls.py          # Main URL configuration
-│   ├── views.py         # View functions
-│   ├── web_urls.py      # Web route definitions
-│   └── wsgi.py          # WSGI configuration
-├── static/              # Static assets (CSS, JS, images)
-│   ├── css/             # CSS files
-│   ├── js/              # JavaScript files
-│   └── images/          # Image assets
-├── staticfiles/         # Collected static files (generated)
-├── templates/           # HTML templates
-├── manage.py            # Django management script
-├── requirements.txt     # Python dependencies
-├── package.json         # Node.js dependencies (Tailwind CSS)
-└── vercel.json          # Vercel deployment configuration
-```
 
 ## Contributing
 
