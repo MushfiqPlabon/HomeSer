@@ -27,9 +27,6 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # CSRF Trusted Origins for production
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
-# CSRF Trusted Origins for production
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
 ).split(",")
@@ -99,14 +96,6 @@ WSGI_APPLICATION = "HomeSer.wsgi.app"
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
 # Supabase PostgreSQL configuration (no fallback to SQLite)
 
-# Get database configuration from environment variables using python-dotenv
-DB_USER = os.getenv("user", "").strip()
-DB_PASSWORD = os.getenv("password", "").strip()
-DB_HOST = os.getenv("host", "").strip()
-DB_PORT = os.getenv("port", "").strip()
-DB_NAME = os.getenv("dbname", "").strip()
-
-# Always use Supabase PostgreSQL configuration
 # Always use Supabase PostgreSQL configuration
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
@@ -234,6 +223,9 @@ if os.getenv("REDIS_URL"):
             "LOCATION": os.getenv("REDIS_URL"),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CONNECTION_POOL_KWARGS": {
+                    "ssl_cert_reqs": None
+                }
             },
             "TIMEOUT": int(os.getenv("CACHE_TTL", 900)),  # 15 minutes default
         }
@@ -311,8 +303,12 @@ elif (
         cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
         api_key=os.getenv("CLOUDINARY_API_KEY"),
         api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+        secure=True
     )
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+else:
+    # Fallback to local storage for development
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 # DRF Spectacular Settings
 SPECTACULAR_SETTINGS = {

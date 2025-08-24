@@ -1,25 +1,18 @@
 #!/bin/bash
-# vercel-setup.sh
-# Helper script for initial Vercel setup
 
-echo "HomeSer Vercel Setup Script"
-echo "=========================="
+# Exit on any error
+set -e
 
-# Check if we're running on Vercel
-if [[ $VERCEL == "1" ]]; then
-    echo "Running on Vercel, executing setup tasks..."
-    
-    # Collect static files
-    echo "Collecting static files..."
-    python manage.py collectstatic --noinput
-    
-    # Check if this is a new deployment
-    if [[ $VERCEL_ENV == "production" ]]; then
-        echo "Production environment detected"
-        # Add any production-specific setup here
-    fi
-    
-    echo "Setup complete!"
-else
-    echo "Not running on Vercel. Skipping setup tasks."
-fi
+# Install dependencies
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+# Collect static files
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
+# Run migrations
+echo "Running migrations..."
+python manage.py migrate --noinput
+
+echo "Setup completed successfully!"
